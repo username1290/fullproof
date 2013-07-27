@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-var fullproof = fullproof || {};
+
+goog.provide('fullproof.StoreDescriptor');
+goog.provide('fullproof.StoreManager');
+
+
 
 /**
  * A descriptor for a store.
@@ -23,17 +26,15 @@ var fullproof = fullproof || {};
  * @param ref a reference to a fullproof.store.X function
  */
 fullproof.StoreDescriptor = function(name, ref) {
-	if (!(this instanceof fullproof.StoreDescriptor)) {
-		return new fullproof.StoreDescriptor(name, ref);
-	}
 	this.name = name;
 	this.ref = ref;
 };
 
+
 /**
  * A StoreManager finds and instanciates stores
  * @constructor
- * @param {Array.fullproof.StoreDescriptor} storeDescriptors an array of {fullproof.StoreDescriptor} instances. Just leave undefined to use the default stores.
+ * @param {Array.<fullproof.StoreDescriptor>} storeDescriptors an array of {fullproof.StoreDescriptor} instances. Just leave undefined to use the default stores.
  */
 fullproof.StoreManager = function(storeDescriptors) {
 	

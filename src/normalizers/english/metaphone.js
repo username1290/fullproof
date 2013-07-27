@@ -1,178 +1,192 @@
-var fullproof = (function(NAMESPACE) {
-	NAMESPACE.english = NAMESPACE.english|| {};
-	
-	
-	/*
-	Copyright (c) 2011, Chris Umbel
+/*
+ Copyright (c) 2011, Chris Umbel
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-	The above copyright notice and this permission notice shall be included in
-	all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
-	*/
-	/*
-	 * Borrowed from https://github.com/NaturalNode/natural/blob/master/lib/natural/phonetics/metaphone.js
-	 */
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
+/*
+ * Borrowed from https://github.com/NaturalNode/natural/blob/master/lib/natural/phonetics/metaphone.js
+ */
 
-    NAMESPACE.english.metaphone_make = function(maxLength) {
-        "use strict";
 
-        function dedup(token) {
-            return token.replace(/([^c])\1/g, '$1');
-        }
+goog.provide('fullproof.normalizer.english.Metaphone');
 
-        function dropInitialLetters(token) {
-            if(token.match(/^(kn|gn|pn|ae|wr)/))
-                return token.substr(1, token.length - 1);
 
-            return token;
-        }
 
-        function dropBafterMAtEnd(token) {
-            return token.replace(/mb$/, 'm');
-        }
+/**
+ * @param {number} maxLength
+ * @constructor
+ */
+fullproof.normalizer.english.Metaphone = function(maxLength) {
+  this.maxLength = maxLength;
+};
 
-        function cTransform(token) {
-            token = token.replace(/([^s]|^)(c)(h)/g, '$1x$3').trim();
-            token = token.replace(/cia/g, 'xia');
-            token = token.replace(/c(i|e|y)/g, 's$1');
-            token = token.replace(/c/g, 'k');
 
-            return token;
-        }
+/**
+ * @param {string} token
+ * @param {function(string)=} callback
+ * @return {string}
+ */
+fullproof.normalizer.english.Metaphone.prototype.process = function(
+    token, callback) {
+  function dedup(token) {
+    return token.replace(/([^c])\1/g, '$1');
+  }
 
-        function dTransform(token) {
-            token = token.replace(/d(ge|gy|gi)/g, 'j$1');
-            token = token.replace(/d/g, 't');
+  function dropInitialLetters(token) {
+    if (token.match(/^(kn|gn|pn|ae|wr)/))
+      return token.substr(1, token.length - 1);
 
-            return token;
-        }
+    return token;
+  }
 
-        function dropG(token) {
-            token = token.replace(/gh(^$|[^aeiou])/g, 'h$1');
-            token = token.replace(/g(n|ned)$/g, '$1');
+  function dropBafterMAtEnd(token) {
+    return token.replace(/mb$/, 'm');
+  }
 
-            return token;
-        }
+  function cTransform(token) {
+    token = token.replace(/([^s]|^)(c)(h)/g, '$1x$3').trim();
+    token = token.replace(/cia/g, 'xia');
+    token = token.replace(/c(i|e|y)/g, 's$1');
+    token = token.replace(/c/g, 'k');
 
-        function transformG(token) {
-            token = token.replace(/([^g]|^)(g)(i|e|y)/g, '$1j$3');
-            token = token.replace(/gg/g, 'g');
-            token = token.replace(/g/g, 'k');
+    return token;
+  }
 
-            return token;
-        }
+  function dTransform(token) {
+    token = token.replace(/d(ge|gy|gi)/g, 'j$1');
+    token = token.replace(/d/g, 't');
 
-        function dropH(token) {
-            return token.replace(/([aeiou])h([^aeiou])/g, '$1$2');
-        }
+    return token;
+  }
 
-        function transformCK(token) {
-            return token.replace(/ck/g, 'k');
-        }
-        function transformPH(token) {
-            return token.replace(/ph/g, 'f');
-        }
+  function dropG(token) {
+    token = token.replace(/gh(^$|[^aeiou])/g, 'h$1');
+    token = token.replace(/g(n|ned)$/g, '$1');
 
-        function transformQ(token) {
-            return token.replace(/q/g, 'k');
-        }
+    return token;
+  }
 
-        function transformS(token) {
-            return token.replace(/s(h|io|ia)/g, 'x$1');
-        }
+  function transformG(token) {
+    token = token.replace(/([^g]|^)(g)(i|e|y)/g, '$1j$3');
+    token = token.replace(/gg/g, 'g');
+    token = token.replace(/g/g, 'k');
 
-        function transformT(token) {
-            token = token.replace(/t(ia|io)/g, 'x$1');
-            token = token.replace(/th/, '0');
+    return token;
+  }
 
-            return token;
-        }
+  function dropH(token) {
+    return token.replace(/([aeiou])h([^aeiou])/g, '$1$2');
+  }
 
-        function dropT(token) {
-            return token.replace(/tch/g, 'ch');
-        }
+  function transformCK(token) {
+    return token.replace(/ck/g, 'k');
+  }
 
-        function transformV(token) {
-            return token.replace(/v/g, 'f');
-        }
+  function transformPH(token) {
+    return token.replace(/ph/g, 'f');
+  }
 
-        function transformWH(token) {
-            return token.replace(/^wh/, 'w');
-        }
+  function transformQ(token) {
+    return token.replace(/q/g, 'k');
+  }
 
-        function dropW(token) {
-            return token.replace(/w([^aeiou]|$)/g, '$1');
-        }
+  function transformS(token) {
+    return token.replace(/s(h|io|ia)/g, 'x$1');
+  }
 
-        function transformX(token) {
-            token = token.replace(/^x/, 's');
-            token = token.replace(/x/g, 'ks');
-            return token;
-        }
+  function transformT(token) {
+    token = token.replace(/t(ia|io)/g, 'x$1');
+    token = token.replace(/th/, '0');
 
-        function dropY(token) {
-            return token.replace(/y([^aeiou]|$)/g, '$1');
-        }
+    return token;
+  }
 
-        function transformZ(token) {
-            return token.replace(/z/, 's');
-        }
+  function dropT(token) {
+    return token.replace(/tch/g, 'ch');
+  }
 
-        function dropVowels(token) {
-            return token.charAt(0) + token.substr(1, token.length).replace(/[aeiou]/g, '');
-        }
+  function transformV(token) {
+    return token.replace(/v/g, 'f');
+  }
 
-        return function(token, callback) {
-            maxLength = maxLength || 32;
-            token = token.toLowerCase();
-            token = dedup(token);
-            token = dropInitialLetters(token);
-            token = dropBafterMAtEnd(token);
-            token = transformCK(token);
-            token = cTransform(token);
-            token = dTransform(token);
-            token = dropG(token);
-            token = transformG(token);
-            token = dropH(token);
-            token = transformPH(token);
-            token = transformQ(token);
-            token = transformS(token);
-            token = transformX(token);
-            token = transformT(token);
-            token = dropT(token);
-            token = transformV(token);
-            token = transformWH(token);
-            token = dropW(token);
-            token = dropY(token);
-            token = transformZ(token);
-            token = dropVowels(token);
+  function transformWH(token) {
+    return token.replace(/^wh/, 'w');
+  }
 
-            token.toUpperCase();
-            if(token.length >= maxLength) {
-                token = token.substring(0, maxLength);
-            }
-            token = token.toUpperCase();
+  function dropW(token) {
+    return token.replace(/w([^aeiou]|$)/g, '$1');
+  }
 
-            return callback?callback(token):token;
-        };
-    };
+  function transformX(token) {
+    token = token.replace(/^x/, 's');
+    token = token.replace(/x/g, 'ks');
+    return token;
+  }
 
-    NAMESPACE.english.metaphone = NAMESPACE.english.metaphone_make(32);
+  function dropY(token) {
+    return token.replace(/y([^aeiou]|$)/g, '$1');
+  }
 
-    return NAMESPACE;
-})(fullproof||{});
+  function transformZ(token) {
+    return token.replace(/z/, 's');
+  }
+
+  function dropVowels(token) {
+    return token.charAt(0) + token.substr(1, token.length).replace(/[aeiou]/g, '');
+  }
+
+  token = token.toLowerCase();
+  token = dedup(token);
+  token = dropInitialLetters(token);
+  token = dropBafterMAtEnd(token);
+  token = transformCK(token);
+  token = cTransform(token);
+  token = dTransform(token);
+  token = dropG(token);
+  token = transformG(token);
+  token = dropH(token);
+  token = transformPH(token);
+  token = transformQ(token);
+  token = transformS(token);
+  token = transformX(token);
+  token = transformT(token);
+  token = dropT(token);
+  token = transformV(token);
+  token = transformWH(token);
+  token = dropW(token);
+  token = dropY(token);
+  token = transformZ(token);
+  token = dropVowels(token);
+
+  if (token.length >= this.maxLength) {
+    token = token.substring(0, this.maxLength);
+  }
+  token = token.toUpperCase();
+
+  if (callback) {
+    callback(token);
+  }
+  return token;
+};
+
+
+fullproof.normalizer.english.Metaphone.instance =
+    new fullproof.normalizer.english.Metaphone(32);
+
 

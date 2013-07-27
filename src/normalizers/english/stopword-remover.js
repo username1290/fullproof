@@ -1,12 +1,12 @@
-var fullproof = (function(NAMESPACE) {
+/**
+ * Stopword list, based on http://members.unine.ch/jacques.savoy/clef/
+ * Works for lowercased words.
+ */
+
+
+goog.provide('fullproof.NAMESPACE.english.stopwords');
 	
-	NAMESPACE.english = NAMESPACE.english|| {};
-	
-	/**
-	 * Stopword list, based on http://members.unine.ch/jacques.savoy/clef/
-	 * Works for lowercased words.
-	 */
-	var stopwords = {
+  fullproof.NAMESPACE.english.stopwords = {
 	    "a" : 1, "a's" : 1, "able" : 1, "about" : 1, "above" : 1, "according" : 1, "accordingly" : 1, "across" : 1,
 	    "actually" : 1, "after" : 1, "afterwards" : 1, "again" : 1, "against" : 1, "ain't" : 1, "all" : 1, "allow" : 1,
 	    "allows" : 1, "almost" : 1, "alone" : 1, "along" : 1, "already" : 1, "also" : 1, "although" : 1, "always" : 1,
@@ -80,10 +80,6 @@ var fullproof = (function(NAMESPACE) {
 	    "wouldn't" : 1, "x" : 1, "y" : 1, "yes" : 1, "yet" : 1, "you" : 1, "you'd" : 1, "you'll" : 1,
 	    "you're" : 1, "you've" : 1, "your" : 1, "yours" : 1, "yourself" : 1, "yourselves" : 1, "z" : 1, "zero" : 1 };
 
-	NAMESPACE.english.stopword_remover = function(word, callback) {
-		return NAMESPACE.normalizer.filter_in_object(word, stopwords, callback);
-	};
-	
-	return NAMESPACE;
-})(fullproof||{});
+
+
 
