@@ -212,3 +212,5 @@ net.kornr.unicode.lowercase = new net.kornr.unicode.Normalizer(norm_lowercase_da
  * @type {net.kornr.unicode.Normalizer}
  */
 net.kornr.unicode.lowercase_nomark = new net.kornr.unicode.Normalizer(norm_lowercase_nomark_data);
+
+

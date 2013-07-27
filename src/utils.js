@@ -16,63 +16,6 @@
  
 var fullproof = fullproof || {};
 
-/**
- * An object that associates a value and a numerical score
- * @constructor
- */
-fullproof.ScoredElement = function (value, score) {
-    if (!(this instanceof fullproof.ScoredElement)) {
-        return new fullproof.ScoredElement(value, score);
-    }
-    this.value = value;
-    this.score = score === undefined ? 1.0 : score;
-};
-
-fullproof.ScoredElement.prototype.toString = function() {
-	return "["+this.value+"|"+this.score+"]";
-};
-fullproof.ScoredElement.prototype.getValue = function () {
-    return this.value;
-};
-fullproof.ScoredElement.prototype.getScore = function () {
-    return this.score;
-};
-
-fullproof.ScoredElement.comparatorObject = {
-		lower_than: function(a,b) {
-			return a.value<b.value;
-		},
-		equals: function(a,b) {
-			return a.value==b.value;
-		}
-	};
-fullproof.ScoredElement.prototype.comparatorObject = fullproof.ScoredElement.comparatorObject;
-
-fullproof.ScoredElement.mergeFn = function(a,b) {
-	return new fullproof.ScoredElement(a.value, a.score + b.score);
-};
-
-/**
- * Associates a key (typically a word), a value, and a score.
- * @constructor
- * @extends {fullproof.ScoredElement}
- */
-fullproof.ScoredEntry = function (key, value, score) {
-    if (!(this instanceof fullproof.ScoredEntry)) {
-        return new fullproof.ScoredEntry(key, value, score);
-    }
-    this.key = key;
-    this.value = value;
-    this.score = score === undefined ? 1.0 : score;
-};
-fullproof.ScoredEntry.prototype = new fullproof.ScoredElement();
-fullproof.ScoredEntry.comparatorObject = fullproof.ScoredElement.comparatorObject;
-fullproof.ScoredEntry.prototype.getKey = function() { return this.key; };
-fullproof.ScoredEntry.prototype.toString = function () {
-    return "[" + this.key + "=" + this.value + "|" + this.score + "]";
-};
-
-
 
 /**
  * Creates a synchronization point. Return a function that collects

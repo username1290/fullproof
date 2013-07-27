@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Unicode test</title>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="../../src/deps.js"></script>
+    <script type="text/javascript" src="../unicode/normalizer_lowercase.js"></script>
+    <script type="text/javascript" src="../unicode/normalizer_lowercase_nomark.js"></script>
+    <script type="text/javascript" src="../unicode/categ_letters_numbers.js"></script>
+    <script type="text/javascript">
+        goog.require('fullproof.normalizer');
+        goog.require('fullproof.StandardAnalyzer');
+        goog.require('fullproof.ScoringAnalyzer');
+    </script>
+</head>
+<body>
+    <script type="text/javascript">
+        goog.require('goog.testing.jsunit');
+        var test_standard_analyzer = function() {
+            var stda = new fullproof.StandardAnalyzer(fullproof.normalizer.to_lowercase_nomark);
+            assertArrayEquals('simple', ['this', 'is', 'a', 'test'],
+                    stda.parseAll("this is a test"));
+            assertArrayEquals('with spaces', ['this', 'is', 'a', 'test'],
+                    stda.parseAll("this  is a  test"));
+        };
+        var test_scoring_analyzer = function() {
+            var stda = new fullproof.ScoringAnalyzer(fullproof.normalizer.to_lowercase_nomark);
+            var words = stda.scoreAll("this is a test longer than the previous one, but not that long for a test though");
+            console.log(words);
+            assertEquals('length', 15, words.length);
+            assertEquals('key 0', 'this', words[0].key);
+            assertEquals('key 1', 'is', words[1].key);
+            assertEquals('key 2', 'a', words[2].key);
+            assertEquals('key 3', 'test', words[3].key);
+            assertTrue('score 0', words[0].score > words[1].score);
+            assertTrue('score 2', words[2].score > words[1].score);
+        };
+    </script>
+</body>
+</html>
