@@ -24,6 +24,7 @@ net.kornr.unicode.CONST_GO_RIGHT = -2;
  * should be written for this case)
  * @param {Array.<Array.<string|number>}} data
  * @constructor
+ * @implements {fullproof.normalizer.Normalizer}
  */
 net.kornr.unicode.Normalizer = function(data) {
 
@@ -72,8 +73,7 @@ net.kornr.unicode.Normalizer.prototype.normalizer_element_match = function(c, in
 
 
 /**
- * @param {string} str
- * @return {string}
+ * @inheritDoc
  */
 net.kornr.unicode.Normalizer.prototype.normalize = function(str) {
 

@@ -19,12 +19,13 @@
 
 goog.provide('fullproof.AbstractAnalyzer');
 goog.require('fullproof.ScoredElement');
+goog.require('fullproof.normalizer.Normalizer');
 
 
 
 /**
  * A prototype for Analyzers objects.
- * @param {Array.<fullproof.normalizer.BasicNormalizer>} normalizers
+ * @param {Array.<fullproof.normalizer.Normalizer>} normalizers
  * @constructor
  */
 fullproof.AbstractAnalyzer = function(normalizers) {
