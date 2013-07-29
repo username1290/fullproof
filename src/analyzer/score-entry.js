@@ -1,51 +1,72 @@
 
-goog.provide('fullproof.ScoredElement');
+goog.provide('fullproof.ScoredEntry');
 goog.provide('fullproof.ScoredEntry');
 
 
 
 /**
  * An object that associates a value and a numerical score
- * @param {string} value
- * @param {number=} score
+ * @param {string} key usually a word.
+ * @param {string} store_name store name where original value reside.
+ * @param {IDBKey} p_key primary key.
+ * @param {number=} opt_score score.
  * @constructor
  */
-fullproof.ScoredElement = function(value, score) {
+fullproof.ScoredEntry = function(key, store_name, p_key, opt_score) {
   /**
    * @type {string}
    */
-  this.value = value;
+  this.key = key;
+  /**
+   * @type {string}
+   */
+  this.store_name = store_name;
+  /**
+   * @type {IDBKey}
+   */
+  this.primary_key = p_key;
   /**
    * @type {number}
    */
-  this.score = goog.isDef(score) ? score : 1.0;
-};
-
-
-/**
- * @inheritDoc
- */
-fullproof.ScoredElement.prototype.toString = function() {
-  return "["+this.value+"|"+this.score+"]";
+  this.score = goog.isDef(opt_score) ? opt_score : 1.0;
 };
 
 
 /**
  * @return {string}
  */
-fullproof.ScoredElement.prototype.getValue = function () {
-  return this.value;
+fullproof.ScoredEntry.prototype.getStoreName = function () {
+  return this.store_name;
+};
+
+
+/**
+ * @return {IDBKey}
+ */
+fullproof.ScoredEntry.prototype.getPrimaryKey = function () {
+  return this.primary_key;
 };
 
 
 /**
  * @return {number}
  */
-fullproof.ScoredElement.prototype.getScore = function () {
+fullproof.ScoredEntry.prototype.getScore = function () {
   return this.score;
 };
 
-fullproof.ScoredElement.comparatorObject = {
+
+/**
+ * Rescale the score.
+ * @param {number} scale scale value to multiply the score.
+ */
+fullproof.ScoredEntry.prototype.rescale = function(scale) {
+  if (!isNaN(scale)) {
+    this.score *= scale;
+  }
+};
+
+fullproof.ScoredEntry.comparatorObject = {
   lower_than: function(a,b) {
     return a.value<b.value;
   },
@@ -53,37 +74,18 @@ fullproof.ScoredElement.comparatorObject = {
     return a.value==b.value;
   }
 };
-fullproof.ScoredElement.prototype.comparatorObject = fullproof.ScoredElement.comparatorObject;
+fullproof.ScoredEntry.prototype.comparatorObject = fullproof.ScoredEntry.comparatorObject;
 
 
 /**
  *
- * @param {fullproof.ScoredElement} a
- * @param {fullproof.ScoredElement} b
- * @returns {fullproof.ScoredElement}
+ * @param {fullproof.ScoredEntry} a
+ * @param {fullproof.ScoredEntry} b
+ * @returns {fullproof.ScoredEntry}
  */
-fullproof.ScoredElement.mergeFn = function(a,b) {
-  return new fullproof.ScoredElement(a.value, a.score + b.score);
+fullproof.ScoredEntry.mergeFn = function(a,b) {
+  return new fullproof.ScoredEntry(a.value, a.score + b.score);
 };
-
-
-
-/**
- * Associates a key (typically a word), a value, and a score.
- * param {string} key
- * param {string} value
- * @param {number=} score
- * @constructor
- * @extends {fullproof.ScoredElement}
- */
-fullproof.ScoredEntry = function (key, value, score) {
-  goog.base(this, value, score);
-  /**
-   * @type {string}
-   */
-  this.key = key;
-};
-goog.inherits(fullproof.ScoredEntry, fullproof.ScoredElement);
 
 
 /**
@@ -91,6 +93,29 @@ goog.inherits(fullproof.ScoredEntry, fullproof.ScoredElement);
  */
 fullproof.ScoredEntry.prototype.getKey = function() {
   return this.key;
+};
+
+
+/**
+ * @return {!Object}
+ */
+fullproof.ScoredEntry.prototype.toJson = function() {
+  return {
+    'store_name': this.store_name,
+    'primary_key': this.primary_key,
+    'key': this.key,
+    'score': this.score
+  };
+};
+
+
+/**
+ * @param {Object} json
+ * @returns {!fullproof.ScoredEntry}
+ */
+fullproof.ScoredEntry.fromJson = function(json) {
+  return new fullproof.ScoredEntry(json['key'], json['store_name'],
+      json['primary_key'], json['score']);
 };
 
 

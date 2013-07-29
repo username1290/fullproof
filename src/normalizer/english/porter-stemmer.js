@@ -16,65 +16,70 @@
  * @author Matt Chadburn <matt@commuterjoy.co.uk>
  */
 
-goog.provide('fullproof.NAMESPACE.english.PorteStemmer');
+goog.provide('fullproof.normalizer.english.PorterStemmer');
 
 
-fullproof.NAMESPACE.english.PorteStemmer = function() {
 
-    var step2list = new Array();
-    step2list['ational'] = 'ate';
-    step2list['tional'] = 'tion';
-    step2list['enci'] = 'ence';
-    step2list['anci'] = 'ance';
-    step2list['izer'] = 'ize';
-    step2list['bli'] = 'ble';
-    step2list['alli'] = 'al';
-    step2list['entli'] = 'ent';
-    step2list['eli'] = 'e';
-    step2list['ousli'] = 'ous';
-    step2list['ization'] = 'ize';
-    step2list['ation'] = 'ate';
-    step2list['ator'] = 'ate';
-    step2list['alism'] = 'al';
-    step2list['iveness'] = 'ive';
-    step2list['fulness'] = 'ful';
-    step2list['ousness'] = 'ous';
-    step2list['aliti'] = 'al';
-    step2list['iviti'] = 'ive';
-    step2list['biliti'] = 'ble';
-    step2list['logi'] = 'log';
-
-    var step3list = new Array();
-    step3list['icate'] = 'ic';
-    step3list['ative'] = '';
-    step3list['alize'] = 'al';
-    step3list['iciti'] = 'ic';
-    step3list['ical'] = 'ic';
-    step3list['ful'] = '';
-    step3list['ness'] = '';
-
-    var c = '[^aeiou]';          // consonant
-    var v = '[aeiouy]';          // vowel
-    var C = c + '[^aeiouy]*';    // consonant sequence
-    var V = v + '[aeiou]*';      // vowel sequence
-
-    var mgr0 = '^(' + C + ')?' + V + C;               // [C]VC... is m>0
-    var meq1 = '^(' + C + ')?' + V + C + '(' + V + ')?$';  // [C]VC[V] is m=1
-    var mgr1 = '^(' + C + ')?' + V + C + V + C;       // [C]VCVC... is m>1
-    var s_v = '^(' + C + ')?' + v;                   // vowel in stem
+/**
+ * @constructor
+ * @implements {fullproof.normalizer.Normalizer}
+ */
+fullproof.normalizer.english.PorterStemmer = function() {
 
 };
 
 
 /**
- * Steam.
- * @param {string} word
- * @param {function(string)=} callback
- * @return {string}
+ * @inheritDoc
  */
-fullproof.NAMESPACE.english.PorteStemmer.prototype.steam = function(word, callback) {
-  word = word.toLowerCase();
+fullproof.normalizer.english.PorterStemmer.prototype.normalize = function(
+    word) {
 
+  var step2list = {
+    'ational': 'ate',
+    'tional': 'tion',
+    'enci': 'ence',
+    'anci': 'ance',
+    'izer': 'ize',
+    'bli': 'ble',
+    'alli': 'al',
+    'entli': 'ent',
+    'eli': 'e',
+    'ousli': 'ous',
+    'ization': 'ize',
+    'ation': 'ate',
+    'ator': 'ate',
+    'alism': 'al',
+    'iveness': 'ive',
+    'fulness': 'ful',
+    'ousness': 'ous',
+    'aliti': 'al',
+    'iviti': 'ive',
+    'biliti': 'ble',
+    'logi': 'log'
+  };
+
+  var step3list = {
+    'icate': 'ic',
+    'ative': '',
+    'alize': 'al',
+    'iciti': 'ic',
+    'ical': 'ic',
+    'ful': '',
+    'ness': ''
+  };
+
+  var c = '[^aeiou]';          // consonant
+  var v = '[aeiouy]';          // vowel
+  var C = c + '[^aeiouy]*';    // consonant sequence
+  var V = v + '[aeiou]*';      // vowel sequence
+
+  var mgr0 = '^(' + C + ')?' + V + C;               // [C]VC... is m>0
+  var meq1 = '^(' + C + ')?' + V + C + '(' + V + ')?$';  // [C]VC[V] is m=1
+  var mgr1 = '^(' + C + ')?' + V + C + V + C;       // [C]VCVC... is m>1
+  var s_v = '^(' + C + ')?' + v;                   // vowel in stem
+
+  word = word.toLowerCase();
   var stem;
   var suffix;
   var firstch;
@@ -218,9 +223,6 @@ fullproof.NAMESPACE.english.PorteStemmer.prototype.steam = function(word, callba
     w = firstch.toLowerCase() + w.substr(1);
   }
 
-  if (callback) {
-    callback(w);
-  }
   return w;
 };
 

@@ -95,28 +95,3 @@ fullproof.AbstractAnalyzer.prototype.parse = function(text, callback) {
 };
 
 
-/**
- * @param {string} text
- * @return {Array.<fullproof.ScoredElement>}
- */
-fullproof.AbstractAnalyzer.prototype.scoreAll = function(text) {
-  var result = [];
-  // Note: score is always sync.
-  this.score(text, function(token) {
-    if (!goog.isNull(token)) {
-      result.push(token);
-    }
-  });
-  return result;
-};
-
-
-/**
- * @param {string} text
- * @param {function(fullproof.ScoredElement)} callback
- */
-fullproof.AbstractAnalyzer.prototype.score = function(text, callback) {
-  this.parse(text, function(word) {
-    callback(new fullproof.ScoredElement(word));
-  });
-};

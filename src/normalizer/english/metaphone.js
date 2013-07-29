@@ -31,6 +31,7 @@ goog.provide('fullproof.normalizer.english.Metaphone');
 /**
  * @param {number} maxLength
  * @constructor
+ * @implements {fullproof.normalizer.Normalizer}
  */
 fullproof.normalizer.english.Metaphone = function(maxLength) {
   this.maxLength = maxLength;
@@ -38,12 +39,9 @@ fullproof.normalizer.english.Metaphone = function(maxLength) {
 
 
 /**
- * @param {string} token
- * @param {function(string)=} callback
- * @return {string}
+ * @inheritDoc
  */
-fullproof.normalizer.english.Metaphone.prototype.process = function(
-    token, callback) {
+fullproof.normalizer.english.Metaphone.prototype.normalize = function(token) {
   function dedup(token) {
     return token.replace(/([^c])\1/g, '$1');
   }
@@ -179,14 +177,9 @@ fullproof.normalizer.english.Metaphone.prototype.process = function(
   }
   token = token.toUpperCase();
 
-  if (callback) {
-    callback(token);
-  }
   return token;
 };
 
 
-fullproof.normalizer.english.Metaphone.instance =
-    new fullproof.normalizer.english.Metaphone(32);
 
 

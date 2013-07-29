@@ -21,8 +21,8 @@ fullproof.normalizer.Normalizer = function() {
 
 /**
  * Normalize a given word.
- * @param {string} word word to be normalized.
- * @return {string} normalized word.
+ * @param {string?} word word to be normalized.
+ * @return {string?} normalized word.
  */
 fullproof.normalizer.Normalizer.prototype.normalize = function(word) {};
 

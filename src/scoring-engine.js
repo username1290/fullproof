@@ -14,111 +14,116 @@
  * limitations under the License.
  */
 
-goog.require('fullproof.AbstractEngine');
+
 goog.provide('fullproof.ScoringEngine');
-goog.require('fullproof.Capabilities');
-goog.require('fullproof.ScoredElement');
+goog.require('fullproof.ScoredEntry');
+
 
 
 /**
- * This engine is based on scoring. During the injection of document, the parser
- * must provide {fullproof.ScoredElement}
- * instances instead of primary values. The score is used to sort the results.
- *
- * @param storeDescriptors
+ * @param {ydn.db.schema.fulltext.Index} schema full text search schema.
  * @constructor
- * @extends {fullproof.AbstractEngine}
+ * @implements {ydn.db.schema.fulltext.Engine}
  */
-fullproof.ScoringEngine = function(storeDescriptors) {
-  goog.base(this, storeDescriptors);
+fullproof.ScoringEngine = function(schema) {
+  /**
+   * @final
+   * @protected
+   * @type {ydn.db.schema.fulltext.Index}
+   */
+  this.schema = schema;
+  /**
+   * @final
+   * @protected
+   * @type {!Array.<!fullproof.normalizer.Normalizer>}
+   */
+  this.normalizers = fullproof.normalizer.english.getNormalizers(
+      schema.getNormalizers());
+  /**
+   * @final
+   * @protected
+   * @type {fullproof.ScoringAnalyzer}
+   */
+  this.analyzer = new fullproof.ScoringAnalyzer(this.normalizers);
 };
-goog.inherits(fullproof.ScoringEngine, fullproof.AbstractEngine);
 
 
 /**
- * @param {fullproof.Capabilities} capabilities
- * @param {fullproof.AbstractAnalyzer} analyzer
- * @return {boolean}
+ * @return {fullproof.ScoringAnalyzer} analyzer.
  */
-fullproof.ScoringEngine.prototype.checkCapabilities = function(
-    capabilities, analyzer) {
-  if (capabilities.getUseScores() !== true) {
-    throw 'capabilities.getUseScore() must be true';
-  }
-  if (analyzer.provideScore !== true) {
-    throw 'analyzer.provideScore must be true';
-  }
-  if (!capabilities.getComparatorObject()) {
-    throw 'capabilities.getComparatorObject() must return a valid comparator';
-  }
+fullproof.ScoringEngine.prototype.getAnalyzer = function() {
+  return this.analyzer;
+};
 
-  return true;
+
+/**
+ * Analyze query string or index value.
+ * @param {string} query query string.
+ * @return {Array.<string>} list of tokens.
+ */
+fullproof.ScoringEngine.prototype.analyze = function(query) {
+  return this.analyzer.parseAll(query);
+};
+
+
+/**
+ * @inheritDoc
+ */
+fullproof.ScoringEngine.prototype.prepare = function(req) {
+  var result_req = req.copy();
+  var result = new fullproof.ResultSet();
+  req.addProgback(function(x) {
+    var values = /** @type {Array.<Object>} */ (x);
+    var scores = values.map(function(v) {
+      var score = fullproof.ScoredEntry.fromJson(v);
+      var ft_index = this.schema.getIndex(v['store_name']);
+      if (ft_index) {
+        score.rescale(ft_index.getWeight());
+      } else if (goog.DEBUG) {
+        throw new Error('full text search primary index store name "' +
+            v['store_name'] + '" not found in ' + this.schema.getName());
+      }
+      return score;
+    });
+    result.merge(scores);
+    result_req.notify(result);
+    values.length = 0;
+  }, this);
+  req.addCallbacks(function() {
+    result_req.callback(result);
+  }, function(e) {
+    result_req.errback(result);
+  }, this);
+  return result_req;
+};
+
+
+
+
+/**
+ * @param {string} text
+ * @return {Array.<fullproof.ScoredElement>}
+ */
+fullproof.ScoringEngine.prototype.scoreAll = function(text) {
+  var tokens = this.analyzer.parseAll
+  var result = [];
+  // Note: score is always sync.
+  this.score(text, function(token) {
+    if (!goog.isNull(token)) {
+      result.push(token);
+    }
+  });
+  return result;
 };
 
 
 /**
  * @param {string} text
- * @param {function(fullproof.ResultSet)} callback
+ * @param {function(fullproof.ScoredElement)} callback
  */
-fullproof.ScoringEngine.prototype.lookup = function(text, callback) {
-
-  var units = this.getIndexUnits();
-
-  function applyScoreModifier(resultset, modifier) {
-    for (var i = 0, data = resultset.getDataUnsafe(), len = data.length; i < len; ++i) {
-      data[i].score *= modifier;
-    }
-  }
-
-  function merge_resultsets(rset_array, unit) {
-    if (rset_array.length == 0) {
-      return new fullproof.ResultSet(unit.capabilities.getComparatorObject());
-    } else {
-      var set = rset_array.shift();
-      while (rset_array.length > 0) {
-        set.merge(rset_array.shift(), fullproof.ScoredElement.mergeFn);
-      }
-      return set;
-    }
-  }
-
-  var synchro_all_indexes = fullproof.make_synchro_point(function(array_of_resultset) {
-    var merged = merge_resultsets(array_of_resultset);
-    merged.setComparatorObject({
-      lower_than: function(a, b) {
-        if (a.score != b.score) {
-          return a.score > b.score;
-        } else {
-          return a.value < b.value;
-        }
-      },
-      equals: function(a, b) {
-        return a.score === b.score && a.value === b.value;
-      }
-    });
-    callback(merged);
-  }, units.length);
-
-  for (var i = 0; i < units.length; ++i) {
-    var unit = units[i];
-    unit.analyzer.parse(text, fullproof.make_synchro_point(function(array_of_words) {
-      if (array_of_words) {
-        if (array_of_words.length == 0) {
-          callback(new fullproof.ResultSet(unit.capabilities.comparatorObject));
-        } else {
-          var lookup_synchro = fullproof.make_synchro_point(function(rset_array) {
-            var merged = merge_resultsets(rset_array, unit);
-            if (unit.capabilities.getScoreModifier() !== undefined) {
-              applyScoreModifier(merged, unit.capabilities.getScoreModifier());
-            }
-            synchro_all_indexes(merged);
-          }, array_of_words.length);
-
-          for (var i = 0; i < array_of_words.length; ++i) {
-            unit.index.lookup(array_of_words[i].key, lookup_synchro);
-          }
-        }
-      }
-    }));
-  }
+fullproof.ScoringEngine.prototype.score = function(text, callback) {
+  this.analyzer.parse(text, function(word) {
+    callback(new fullproof.ScoredEntry(word));
+  });
 };
+

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Unicode test</title>
+    <script src="../../../../closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="../../../src/deps.js"></script>
+    <script type="text/javascript" src="../../normalizer/unicode/normalizer_lowercase.js"></script>
+    <script type="text/javascript" src="../../normalizer/unicode/normalizer_lowercase_nomark.js"></script>
+    <script type="text/javascript" src="../../normalizer/unicode/categ_letters_numbers.js"></script>
+    <script type="text/javascript">
+        goog.require('fullproof.normalizer.english');
+    </script>
+</head>
+<body>
+    <script type="text/javascript">
+        goog.require('goog.testing.jsunit');
+        var test_en_metaphone = function() {
+            var metaphone = fullproof.normalizer.english.metaphone;
+            assertEquals("Absolutly", "ABSLTL", metaphone.normalize("Absolutly"));
+            assertEquals("Indications", "INTKXNS", metaphone.normalize("Indications"));
+            assertEquals("John", "JN", metaphone.normalize("John"));
+        };
+        var test_en_stemmer = function() {
+            var stemmer = fullproof.normalizer.english.stemmer;
+            assertEquals("ABSOLUTLY", "absolutli", stemmer.normalize("ABSOLUTLY"));
+            assertEquals("Indications", "indic", stemmer.normalize("Indications"));
+            assertEquals("JOHN", "john", stemmer.normalize("JOHN"));
+        };
+        var test_en_stopword = function() {
+            var stop = fullproof.normalizer.english.stop;
+            assertEquals("JOHN", "JOHN", stop.normalize("JOHN"));
+            assertNull("so", stop.normalize("so"));
+            assertNull("is", stop.normalize("is"));
+            assertEquals("valid", "valid", stop.normalize("valid"));
+        };
+    </script>
+</body>
+</html>
