@@ -44,15 +44,30 @@ fullproof.ScoringEngine = function(schema) {
    * @protected
    * @type {fullproof.ScoringAnalyzer}
    */
-  this.analyzer = new fullproof.ScoringAnalyzer(this.normalizers);
+  this.analyzer = new fullproof.Analyzer(this.normalizers);
 };
 
 
 /**
- * @return {fullproof.ScoringAnalyzer} analyzer.
+ * Analyze an indexing value.
+ * @param {string} store_name the store name in which document belong.
+ * @param {IDBKey} key primary of the document.
+ * @param {Object} obj the document to be indexed.
+ * @return {Array.<ydn.db.schema.fulltext.Score>} score for each token.
  */
-fullproof.ScoringEngine.prototype.getAnalyzer = function() {
-  return this.analyzer;
+fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
+  var scores = [];
+  for (var i = 0; i < this.schema.count(); i++) {
+    var source = this.schema.index(i);
+    if (source.getStoreName() == store_name) {
+      var text = ydn.db.utils.getValueByKeys(obj, source.getKeyPath());
+      if (text) {
+        var tokens = this.parse(text);
+        scores = scores.concat(this.score(tokens, source, key));
+      }
+    }
+  }
+  return scores;
 };
 
 
@@ -61,7 +76,7 @@ fullproof.ScoringEngine.prototype.getAnalyzer = function() {
  * @param {string} query query string.
  * @return {Array.<string>} list of tokens.
  */
-fullproof.ScoringEngine.prototype.analyze = function(query) {
+fullproof.ScoringEngine.prototype.parse = function(query) {
   return this.analyzer.parseAll(query);
 };
 
@@ -69,7 +84,7 @@ fullproof.ScoringEngine.prototype.analyze = function(query) {
 /**
  * @inheritDoc
  */
-fullproof.ScoringEngine.prototype.prepare = function(req) {
+fullproof.ScoringEngine.prototype.rank = function(req) {
   var result_req = req.copy();
   var result = new fullproof.ResultSet();
   req.addProgback(function(x) {
@@ -98,32 +113,43 @@ fullproof.ScoringEngine.prototype.prepare = function(req) {
 };
 
 
-
-
 /**
- * @param {string} text
- * @return {Array.<fullproof.ScoredElement>}
+ * Normalized tokens.
+ * @param {Array.<string>} tokens tokens.
+ * @returns {Array.<string>} normalized tokens.
  */
-fullproof.ScoringEngine.prototype.scoreAll = function(text) {
-  var tokens = this.analyzer.parseAll
-  var result = [];
-  // Note: score is always sync.
-  this.score(text, function(token) {
-    if (!goog.isNull(token)) {
-      result.push(token);
-    }
-  });
-  return result;
+fullproof.ScoringEngine.prototype.normalize = function(tokens) {
+  var nTokens = [];
+  for (var i = 0; i < tokens.length; i++) {
+    nTokens[i] = this.analyzer.normalize(tokens[i]);
+  }
+  return nTokens;
 };
 
 
 /**
- * @param {string} text
- * @param {function(fullproof.ScoredElement)} callback
+ * @param {Array.<string>} tokens
+ * @param {ydn.db.schema.FullTextSource} source
+ * @param {IDBKey=} opt_key primary key.
+ * @return {Array.<ydn.db.schema.fulltext.Score>} scores for each unique token.
  */
-fullproof.ScoringEngine.prototype.score = function(text, callback) {
-  this.analyzer.parse(text, function(word) {
-    callback(new fullproof.ScoredEntry(word));
-  });
+fullproof.ScoringEngine.prototype.score = function(tokens, source, opt_key) {
+  var nTokens = this.normalize(tokens);
+  var scores = [];
+  var wordcount = 0;
+  for (var i = 0; i < tokens.length; i++) {
+    var word = nTokens[i];
+    var score = goog.array.find(scores, function(s) {
+      return s.getKey() == word;
+    });
+    if (!score) {
+      score = new ydn.db.schema.fulltext.Score(word, tokens[i],
+          source.getStoreName(), source.getKeyPath(), opt_key);
+      scores.push(score);
+    }
+    score.encounter(wordcount);
+  }
+
+  return scores;
 };
 

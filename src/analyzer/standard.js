@@ -1,6 +1,6 @@
 
 goog.provide('fullproof.StandardAnalyzer');
-goog.require('fullproof.AbstractAnalyzer');
+goog.require('fullproof.Analyzer');
 
 
 /**
@@ -9,7 +9,7 @@ goog.require('fullproof.AbstractAnalyzer');
  * of normalizers specified when calling the constructor.
  *
  * @constructor
- * @extends {fullproof.AbstractAnalyzer}
+ * @extends {fullproof.Analyzer}
  * @param {Array} normalizers the constructor can take normalizers as parameters. Each
  * normalizer is applied sequentially in the same order as they are
  * passed in the constructor.
@@ -29,7 +29,7 @@ fullproof.StandardAnalyzer = function(normalizers) {
 
 
 };
-goog.inherits(fullproof.StandardAnalyzer, fullproof.AbstractAnalyzer);
+goog.inherits(fullproof.StandardAnalyzer, fullproof.Analyzer);
 
 
 /**

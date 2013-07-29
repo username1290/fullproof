@@ -17,7 +17,7 @@
 
 
 
-goog.provide('fullproof.AbstractAnalyzer');
+goog.provide('fullproof.Analyzer');
 goog.require('fullproof.ScoredElement');
 goog.require('fullproof.normalizer.Normalizer');
 
@@ -28,7 +28,7 @@ goog.require('fullproof.normalizer.Normalizer');
  * @param {Array.<fullproof.normalizer.Normalizer>} normalizers
  * @constructor
  */
-fullproof.AbstractAnalyzer = function(normalizers) {
+fullproof.Analyzer = function(normalizers) {
   /**
    * @protected
    * @type {Array.<fullproof.normalizer.BasicNormalizer>}
@@ -43,7 +43,7 @@ fullproof.AbstractAnalyzer = function(normalizers) {
  * @param {string} word
  * @return {string}
  */
-fullproof.AbstractAnalyzer.prototype.normalize = function(word) {
+fullproof.Analyzer.prototype.normalize = function(word) {
   for (var i = 0; i < this.normalizers.length; i++) {
     word = this.normalizers[i].normalize(word);
   }
@@ -58,7 +58,7 @@ fullproof.AbstractAnalyzer.prototype.normalize = function(word) {
  * @param {string} text
  * @return {Array.<string>}
  */
-fullproof.AbstractAnalyzer.prototype.parseAll = function (text) {
+fullproof.Analyzer.prototype.parseAll = function (text) {
   var result = [];
   // Note: parse is always sync.
   this.parse(text, function(token) {
@@ -77,7 +77,7 @@ fullproof.AbstractAnalyzer.prototype.parseAll = function (text) {
  * @param {string} text
  * @param {function(string)} callback yield each token.
  */
-fullproof.AbstractAnalyzer.prototype.parse = function(text, callback) {
+fullproof.Analyzer.prototype.parse = function(text, callback) {
   var functor = net.kornr.unicode.is_letter_number;
   var start = 0;
   var max = text.length;
