@@ -20,37 +20,44 @@
 
 
 goog.provide('fullproof.ScoreEntry');
-
+goog.require('ydn.db.schema.fulltext.ScoreEntry');
 
 
 
 /**
  * An object that associates a value and a numerical score
- * @param {string} key normalized value.
- * @param {string} index_value original value being index.
+ * @param {string} keyword normalized value of original word.
+ * @param {string} value original word.
+ * @param {number} position source key path.
  * @param {string} store_name source store name.
  * @param {string} key_path source key path.
  * @param {IDBKey=} opt_p_key source primary key.
  * @param {number=} opt_score score.
  * @constructor
+ * @implements {ydn.db.schema.fulltext.ScoreEntry}
  */
-fullproof.ScoreEntry = function(key, index_value, store_name,
-                                key_path, opt_p_key, opt_score) {
+fullproof.ScoreEntry = function(keyword, value, position, store_name, key_path,
+                                opt_p_key, opt_score) {
   /**
    * @final
    * @type {string}
    */
-  this.key = key;
+  this.key = keyword;
   /**
    * @final
    * @type {string}
    */
-  this.index_value = index_value;
+  this.value = value;
   /**
    * @final
    * @type {string}
    */
   this.store_name = store_name;
+  /**
+   * @final
+   * @type {number}
+   */
+  this.position = position;
   /**
    * @final
    * @type {string}
@@ -73,6 +80,20 @@ fullproof.ScoreEntry = function(key, index_value, store_name,
    * @type {Array.<number>}
    */
   this.encounter_count_ = [];
+  /**
+   * @final
+   * @private
+   * @type {!Array.<!fullproof.ScoreEntry>}
+   */
+  this.results_ = [];
+};
+
+
+/**
+ * @return {string} source store name.
+ */
+fullproof.ScoreEntry.prototype.getKeyword = function() {
+  return this.key;
 };
 
 
@@ -127,13 +148,35 @@ fullproof.ScoreEntry.prototype.compute = function() {
 
 
 /**
+ * Set search results of this keyword.
+ * @param {Array} results database lookup entries.
+ */
+fullproof.ScoreEntry.prototype.setResult = function(results) {
+  if (results) {
+    this.results_ = results.map(function(json) {
+      return fullproof.ScoreEntry.fromJson(json);
+    });
+  } else {
+    this.results_.length = 0;
+  }
+};
+
+
+/**
+ * @return {!Array.<!fullproof.ScoreEntry>} results database lookup entries.
+ */
+fullproof.ScoreEntry.prototype.setResult = function(results) {
+  return this.results_;
+};
+
+
+/**
  * Rescale the score.
  * @param {number} scale scale value to multiply the score.
  */
 fullproof.ScoreEntry.prototype.rescale = function(scale) {
-  if (!isNaN(scale)) {
-    this.score *= scale;
-  }
+  this.getScore(); // get computed, if necessary.
+  this.score *= scale;
 };
 
 fullproof.ScoreEntry.cmp = {
@@ -174,6 +217,8 @@ fullproof.ScoreEntry.prototype.toJson = function() {
     'primaryKey': this.primary_key,
     'key': this.key,
     'keyPath': this.key_path,
+    'position': this.position,
+    'value': this.value,
     'score': this.getScore()
   };
 };
@@ -184,8 +229,8 @@ fullproof.ScoreEntry.prototype.toJson = function() {
  * @return {!fullproof.ScoreEntry}
  */
 fullproof.ScoreEntry.fromJson = function(json) {
-  return new fullproof.ScoreEntry(json['key'], json['storeName'],
-      json['primaryKey'], json['keyPath'], json['score']);
+  return new fullproof.ScoreEntry(json['key'], json['value'], json['position'],
+      json['storeName'], json['keyPath'], json['primaryKey'], json['score']);
 };
 
 

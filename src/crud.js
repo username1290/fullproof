@@ -60,11 +60,10 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
  */
 ydn.db.crud.Storage.prototype.search = function(name, query) {
   var ft_schema = this.schema.getFullTextSchema(name);
-  var tokens = this.engine.parse(query);
-  var n_tokens = ft_schema.engine.normalize(tokens);
-  if (n_tokens.length == 0) {
-    return ydn.db.Request.succeed(ydn.db.Request.Method.SEARCH, undefined);
+  var tokens = this.engine.score(query);
+  if (tokens.length == 0) {
+    return ydn.db.Request.succeed(ydn.db.Request.Method.SEARCH, null);
   }
-  var search_req = this.getCoreOperator().search(ft_schema, n_tokens);
+  var search_req = this.getCoreOperator().search(ft_schema, tokens);
   return ft_schema.engine.rank(search_req);
 };

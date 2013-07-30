@@ -60,13 +60,13 @@ fullproof.Analyzer.prototype.normalize = function(word) {
  * @return {Array.<string>}
  */
 fullproof.Analyzer.prototype.parse = function(text) {
-  var result = [];
+  var tokens = [];
   // Note: parse is always sync.
   this.tokenize(text, function(start, len) {
     var token = text.substr(start, len);
-    result.push(token);
+    tokens.push(token);
   });
-  return result;
+  return tokens;
 };
 
 
@@ -100,12 +100,20 @@ fullproof.Analyzer.prototype.tokenize = function(text, callback) {
 
 
 /**
- * @param {Array.<string>} tokens
+ * @param {string} text text to be prase and scored.
  * @param {ydn.db.schema.FullTextSource} source
  * @param {IDBKey=} opt_key primary key.
  * @return {Array.<fullproof.ScoreEntry>} scores for each unique token.
  */
-fullproof.Analyzer.prototype.score = function(tokens, source, opt_key) {
+fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
+  var tokens = [];
+  var positions = [];
+  // Note: parse is always sync.
+  this.tokenize(text, function(start, len) {
+    var token = text.substr(start, len);
+    tokens.push(token);
+    positions.push(start);
+  });
   var nTokens = [];
   for (var i = 0; i < tokens.length; i++) {
     nTokens[i] = this.normalize(tokens[i]);
@@ -120,7 +128,7 @@ fullproof.Analyzer.prototype.score = function(tokens, source, opt_key) {
       return s.getKey() == word;
     });
     if (!score) {
-      score = new fullproof.ScoreEntry(word, tokens[i],
+      score = new fullproof.ScoreEntry(word, tokens[i], positions[i],
           store_name, key_path, opt_key);
       scores.push(score);
     }

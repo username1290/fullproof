@@ -25,8 +25,7 @@
         };
         var test_scoring_analyzer = function() {
             var stda = new fullproof.Analyzer([net.kornr.unicode.lowercase_nomark]);
-            var tokens = stda.parse("this is a test longer than the previous one, but not that long for a test though");
-            var words = stda.score(tokens);
+            var words = stda.score("this is a test longer than the previous one, but not that long for a test though");
             console.log(words);
             assertEquals('length', 15, words.length);
             assertEquals('key 0', 'this', words[0].key);

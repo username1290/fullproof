@@ -88,7 +88,7 @@ fullproof.ScoringEngine.prototype.rank = function(req) {
   var result_req = req.copy();
   var result = new fullproof.ResultSet();
   req.addProgback(function(x) {
-    var values = /** @type {Array.<Object>} */ (x);
+    var score_entry = /** @type {fullproof.ScoreEntry} */ (x);
     var scores = values.map(function(v) {
       var score = fullproof.ScoredEntry.fromJson(v);
       var ft_index = this.schema.getIndex(v['store_name']);
@@ -116,7 +116,7 @@ fullproof.ScoringEngine.prototype.rank = function(req) {
 /**
  * Normalized tokens.
  * @param {Array.<string>} tokens tokens.
- * @returns {Array.<string>} normalized tokens.
+ * @return {Array.<string>} normalized tokens.
  */
 fullproof.ScoringEngine.prototype.normalize = function(tokens) {
   var nTokens = [];
