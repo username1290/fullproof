@@ -20,7 +20,6 @@
 
 
 goog.provide('fullproof.ScoreEntry');
-goog.require('ydn.db.schema.fulltext.ScoreEntry');
 
 
 

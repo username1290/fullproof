@@ -1,12 +1,12 @@
-goog.provide('NAMESPACE.tests');
-goog.require('fullproof.ScoredEntry');
+goog.provide('fullproof.tests');
+goog.require('fullproof.ScoreEntry');
 
-fullproof.ScoredEntry.prototype.mkRandom = function(maxValue) {
+fullproof.ScoreEntry.prototype.mkRandom = function(maxValue) {
   var word = 'xxxxxx'.replace(/./g, function(c) {
     return String.fromCharCode(65 + parseInt(Math.random() * 26));
   });
   var value = parseInt(Math.random() * maxValue);
-  var result = new fullproof.ScoredEntry(word, value, Math.random() * 2);
+  var result = new fullproof.ScoreEntry(word, value, Math.random() * 2);
   return result;
 };
 
@@ -17,19 +17,19 @@ fullproof.ResultSet.prototype.testEquals = function(otherResultSet) {
 };
 
 
-NAMESPACE.tests.error = function() {
+fullproof.tests.error = function() {
   ok(false);
 };
-NAMESPACE.tests.error_restart = function() {
+fullproof.tests.error_restart = function() {
   ok(false);
   QUnit.start();
 };
-NAMESPACE.tests.success_restart = function() {
+fullproof.tests.success_restart = function() {
   ok(true);
   QUnit.start();
 };
 
-NAMESPACE.tests.mkRandomString = function(size) {
+fullproof.tests.mkRandomString = function(size) {
   var result = '';
   for (var i = 0; i < size; ++i) {
     result += String.fromCharCode(65 + parseInt(Math.random() * 26));
@@ -37,7 +37,7 @@ NAMESPACE.tests.mkRandomString = function(size) {
   return result;
 };
 
-NAMESPACE.tests.genericComparator = {
+fullproof.tests.genericComparator = {
   lower_than: function(a, b) {
     var vala = a.value ? a.value : a;
     var valb = b.value ? b.value : b;
@@ -50,38 +50,38 @@ NAMESPACE.tests.genericComparator = {
   }
 };
 
-NAMESPACE.tests.makeResultSetOfScoredEntries = function(count, maxValue) {
-  var result = new fullproof.ResultSet(NAMESPACE.tests.genericComparator);
+fullproof.tests.makeResultSetOfScoredEntries = function(count, maxValue) {
+  var result = new fullproof.ResultSet(fullproof.tests.genericComparator);
   for (var i = 0; i < count; ++i) {
-    result.insert(NAMESPACE.ScoredEntry.prototype.mkRandom(maxValue));
+    result.insert(fullproof.ScoreEntry.prototype.mkRandom(maxValue));
   }
   return result;
 };
 
-NAMESPACE.tests.makeResultSetOfScoredEntriesObjects = function(count) {
-  var result = new fullproof.ResultSet(NAMESPACE.tests.genericComparator);
+fullproof.tests.makeResultSetOfScoredEntriesObjects = function(count) {
+  var result = new fullproof.ResultSet(fullproof.tests.genericComparator);
   var curValue = parseInt(Math.random() * 100);
   for (var i = 0; i < count; ++i) {
     var obh = {
-      param1: NAMESPACE.tests.mkRandomString(8),
-      param2: NAMESPACE.tests.mkRandomString(8),
+      param1: fullproof.tests.mkRandomString(8),
+      param2: fullproof.tests.mkRandomString(8),
       intvalue: parseInt(Math.random() * 1000)
 //					value: parseInt(Math.random()*100)
     };
 
-    result.insert(new NAMESPACE.ScoredEntry(NAMESPACE.tests.mkRandomString(10), obh, Math.random() * 20));
+    result.insert(new fullproof.ScoreEntry(fullproof.tests.mkRandomString(10), obh, Math.random() * 20));
   }
   return result;
 };
 
 
-NAMESPACE.tests.testScoredElement = function(se1, se2) {
+fullproof.tests.testScoredElement = function(se1, se2) {
   deepEqual(se1.value, se2.value);
   equal(se1.score, se2.score);
   return result;
 };
 
-NAMESPACE.tests.createAndOpenStore = function(indexName, storeRef, useScore, callback) {
+fullproof.tests.createAndOpenStore = function(indexName, storeRef, useScore, callback) {
   var store = new storeRef();
   var caps = new fullproof.Capabilities().setDbSize(1024 * 1024 * 10).setUseScores(useScore).setDbName('fullproofTests');
   var analyzer = (useScore ? new fullproof.ScoringAnalyzer() : new fullproof.StandardAnalyzer());

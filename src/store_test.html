@@ -4,19 +4,31 @@
     <meta charset="UTF-8">
     <title>Store test</title>
     <script src="../../closure-library/closure/goog/base.js"></script>
+    <script src="../../ydn-base/js/deps.js"></script>
+    <script src="../../ydn-db/js/deps.js"></script>
     <script type="text/javascript" src="../src/deps.js"></script>
     <script type="text/javascript">
         goog.require('fullproof.ResultSet');
+        goog.require('ydn.db.Storage');
+        goog.require('fullproof.tests');
+        goog.require('goog.testing.ContinuationTestCase');
+        goog.require('goog.testing.jsunit');
     </script>
 </head>
 <body>
     <script type="text/javascript">
-        goog.require('goog.testing.jsunit');
-        var test_full_text_schema = function() {
+        var reachedFinalContinuation;
+        var setUp = function () {
+            reachedFinalContinuation = false;
+
+        };
+        var test_inject = function() {
             var schema = {
-                fullTextIndexes: {
+                fullTextIndexes: [{
                     name: 'test',
                     lang: 'en',
+
+
                     sources: [
                         {
                             storeName: 'article',
@@ -27,14 +39,51 @@
                             keyPath: 'body',
                             weight: 0.5
                         }]
-                },
+                }],
                 stores: [
                     {
-                        name: 'article'
+                        name: 'article',
+                        keyPath: 'title'
                     }]
-            }
-        }
+            };
+            var data = {
+                title: 't1',
+                body: 'This is a test for data injection. Only one entry injected'
+            };
+            var db = new ydn.db.Storage('test_inject-1', schema);
+            var done;
+            var read_data
+            var schema;
+            waitForCondition(
+                    // Condition
+                    function () {
+                        return done;
+                    },
+                    // Continuation
+                    function () {
+                        var store_names = schema.stores.map(function(x) {return x.name});
+                        assertArrayEquals('two object store', ['article', 'test'], store_names);
+                        assertObjectEquals('article t1 inserted as it is', data, read_data);
+                        console.log(read_data);
+                        reachedFinalContinuation = true;
+                        ydn.db.deleteDatabase(db.getName(), db.getType());
+                        db.close();
+                    },
+                    100, // interval
+                    1000); // maxTimeout
+            db.put('article', data);
+            db.getSchema(function(x) {
+                schema = x;
+            });
+            db.get('article', 't1').addBoth(function(x) {
+                read_data = x;
+                done = true;
+            });
+        };
 
+        var testCase = new goog.testing.ContinuationTestCase();
+        testCase.autoDiscoverTests();
+        G_testRunner.initialize(testCase);
     </script>
 </body>
 </html>

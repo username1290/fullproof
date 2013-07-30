@@ -17,6 +17,7 @@
 
 goog.provide('fullproof.ScoringEngine');
 goog.require('fullproof.ScoredEntry');
+goog.require('ydn.db.schema.fulltext.Engine');
 
 
 
