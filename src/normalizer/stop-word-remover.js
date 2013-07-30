@@ -26,6 +26,7 @@ goog.require('fullproof.normalizer.Normalizer');
  * Stopword remover.
  * @param {Array.<string>} stopwords list of stopwords.
  * @constructor
+ * @implements {fullproof.normalizer.Normalizer}
  */
 fullproof.normalizer.StopWordRemover = function(stopwords) {
   /**

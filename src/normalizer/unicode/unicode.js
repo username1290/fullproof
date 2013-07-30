@@ -22,7 +22,7 @@ net.kornr.unicode.CONST_GO_RIGHT = -2;
  * same codepage is efficient. On the other side, the algorithm is not adapted to
  * string mixing characters from different languages/codepages (another search function
  * should be written for this case)
- * @param {Array.<Array.<string|number>}} data
+ * @param {Array.<Array.<string|number>>} data
  * @constructor
  * @implements {fullproof.normalizer.Normalizer}
  */
@@ -41,7 +41,7 @@ net.kornr.unicode.Normalizer = function(data) {
  * - CONST_GO_LEFT if the index is too high
  * @param {number} c
  * @param {number} index
- * @return {number}
+ * @return {number|boolean|string}
  */
 net.kornr.unicode.Normalizer.prototype.normalizer_element_match = function(c, index) {
   if (index < 0) {
@@ -82,7 +82,7 @@ net.kornr.unicode.Normalizer.prototype.normalize = function(str) {
   /**
    * @protected
    * @param {number} c
-   * @return {*}
+   * @return {number|!Array.<number>}
    */
   var normalize_char = function(c) {
     var index = normalize_char_last_index;
@@ -96,12 +96,15 @@ net.kornr.unicode.Normalizer.prototype.normalize = function(str) {
         r = me.normalizer_element_match(c, index);
         if (!(r < 0)) { // a positive integer or an array
           normalize_char_last_index = index; // remember the last successful index for performance
+          goog.asserts.assertNumber(r, 'r');
           return r;
         }
       }
       normalize_char_last_index = index; // remember the last successful index for performance
+      goog.asserts.assertNumber(c, 'c');
       return c; // if not found, the codepoint is not in the array, so keep the same value
     } else {
+      goog.asserts.assertNumber(r, 'r2');
       return r;
     }
   };
@@ -121,9 +124,10 @@ net.kornr.unicode.Normalizer.prototype.normalize = function(str) {
 };
 
 
+
 /**
  * Search iterator.
- * @param {Array.<Array.<string>|string} data
+ * @param {Array.<Array.<string|number>|string>} data
  * @constructor
  */
 net.kornr.unicode.SearchIterator = function (data) {
@@ -133,7 +137,7 @@ net.kornr.unicode.SearchIterator = function (data) {
 
 
 /**
- * @param {string} c
+ * @param {string|number} c
  * @return {boolean}
  */
 net.kornr.unicode.SearchIterator.prototype.next = function(c) {

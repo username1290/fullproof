@@ -28,15 +28,15 @@ goog.provide('fullproof.ScoreEntry');
  * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
  * @param {number} position source key path.
- * @param {string} store_name source store name.
- * @param {string} key_path source key path.
+ * @param {string=} opt_store_name source store name.
+ * @param {string=} opt_key_path source key path.
  * @param {IDBKey=} opt_p_key source primary key.
  * @param {number=} opt_score score.
  * @constructor
  * @implements {ydn.db.schema.fulltext.ScoreEntry}
  */
-fullproof.ScoreEntry = function(keyword, value, position, store_name, key_path,
-                                opt_p_key, opt_score) {
+fullproof.ScoreEntry = function(keyword, value, position, opt_store_name,
+                                opt_key_path, opt_p_key, opt_score) {
   /**
    * @final
    * @type {string}
@@ -49,9 +49,9 @@ fullproof.ScoreEntry = function(keyword, value, position, store_name, key_path,
   this.value = value;
   /**
    * @final
-   * @type {string}
+   * @type {string|undefined}
    */
-  this.store_name = store_name;
+  this.store_name = opt_store_name;
   /**
    * @final
    * @type {number}
@@ -59,16 +59,15 @@ fullproof.ScoreEntry = function(keyword, value, position, store_name, key_path,
   this.position = position;
   /**
    * @final
-   * @type {string}
+   * @type {string|undefined}
    */
-  this.key_path = store_name;
+  this.key_path = opt_store_name;
   /**
    * @final
-   * @type {IDBKey}
+   * @type {IDBKey|undefined}
    */
   this.primary_key = opt_p_key;
   /**
-   * @final
    * @type {number}
    * @protected
    */
@@ -80,7 +79,6 @@ fullproof.ScoreEntry = function(keyword, value, position, store_name, key_path,
    */
   this.encounter_count_ = [];
   /**
-   * @final
    * @private
    * @type {!Array.<!fullproof.ScoreEntry>}
    */
@@ -100,7 +98,7 @@ fullproof.ScoreEntry.prototype.getKeyword = function() {
  * @return {string} source store name.
  */
 fullproof.ScoreEntry.prototype.getStoreName = function() {
-  return this.store_name;
+  return /** @type {string} */ (this.store_name);
 };
 
 
@@ -108,7 +106,7 @@ fullproof.ScoreEntry.prototype.getStoreName = function() {
  * @return {IDBKey} source primary key.
  */
 fullproof.ScoreEntry.prototype.getPrimaryKey = function() {
-  return this.primary_key;
+  return /** @type {IDBKey} */ (this.primary_key);
 };
 
 
@@ -164,7 +162,7 @@ fullproof.ScoreEntry.prototype.setResult = function(results) {
 /**
  * @return {!Array.<!fullproof.ScoreEntry>} results database lookup entries.
  */
-fullproof.ScoreEntry.prototype.setResult = function(results) {
+fullproof.ScoreEntry.prototype.getResult = function(results) {
   return this.results_;
 };
 
@@ -195,7 +193,8 @@ fullproof.ScoreEntry.cmp = {
  * @return {fullproof.ScoreEntry}
  */
 fullproof.ScoreEntry.mergeFn = function(a,b) {
-  return new fullproof.ScoreEntry(a.value, a.score + b.score);
+  return new fullproof.ScoreEntry(a.key, a.value, a.position, a.store_name,
+      a.key_path, a.primary_key, a.score + b.score);
 };
 
 

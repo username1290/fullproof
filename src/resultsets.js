@@ -25,14 +25,14 @@ goog.provide('fullproof.ResultSet');
  *  must be an object of the form {lower_than: func_lt, equals: func_equal}
  *
  *  @constructor
- *  @param comparatorObject a comparator object that provides two functions: lower_than and equals.
+ *  @param {*=} opt_cmp a comparator object that provides two functions: lower_than and equals.
  *  If not defined, a default comparator using the javascript < operator is used. If you're only
  *  storing integer values, you can safely omit this argument.
- *  @param data
+ *  @param {Array=} data
  */
-fullproof.ResultSet = function(comparatorObject, data) {
+fullproof.ResultSet = function(opt_cmp, data) {
 
-  this.comparatorObject = comparatorObject || fullproof.ResultSet.defaultComparator;
+  this.comparatorObject = opt_cmp || fullproof.ResultSet.defaultComparator;
   this.data = data || [];
   this.last_insert = undefined;
 };
@@ -71,7 +71,7 @@ fullproof.binary_search = function(array, value, min, max, lower_than) {
   }
 
   while (max >= min) {
-    var mid = parseInt((max + min) / 2);
+    var mid = parseInt((max + min) / 2, 10);
     if (mid >= array.length) {
       return array.length;
     } else if (lower_than(array[mid], value)) {
@@ -337,7 +337,7 @@ fullproof.ResultSet.prototype.getSize = function() {
  * @return {fullproof.ResultSet} a copy of this ResultSet.
  */
 fullproof.ResultSet.prototype.clone = function() {
-  var clone = new fullproof.ResultSet;
+  var clone = new fullproof.ResultSet();
   clone.setDataUnsafe(this.data.slice(0));
   return clone;
 };

@@ -22,6 +22,7 @@
 // namespace for full-text search index
 goog.provide('ydn.db.crud.Storage.text');
 goog.require('fullproof.ScoringEngine');
+goog.require('ydn.db.crud.Storage');
 
 
 /**
@@ -48,7 +49,7 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
         var json = scores.map(function(x) {
           return x.toJson();
         });
-        console.log(json);
+        // console.log(json);
         me.getCoreOperator().dumpInternal(ft_schema.getName(), json);
       }, this);
     }
@@ -65,7 +66,7 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
  */
 ydn.db.crud.Storage.prototype.search = function(name, query) {
   var ft_schema = this.schema.getFullTextSchema(name);
-  var tokens = this.engine.score(query);
+  var tokens = ft_schema.engine.analyze(query);
   if (tokens.length == 0) {
     return ydn.db.Request.succeed(ydn.db.Request.Method.SEARCH, null);
   }

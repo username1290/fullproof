@@ -83,8 +83,8 @@ fullproof.normalizer.english.PorterStemmer.prototype.normalize = function(
   var stem;
   var suffix;
   var firstch;
-  var origword = w;
   var w = word;
+  var origword = w;
 
   if (word.length < 3) {
     return word;

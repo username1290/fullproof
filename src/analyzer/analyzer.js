@@ -44,12 +44,17 @@ fullproof.Analyzer = function(schema) {
 
 /**
  * Apply normalizers successively.
- * @param {string} word
- * @return {string}
+ * @param {string} word input.
+ * @return {string?} normalized word.
  */
 fullproof.Analyzer.prototype.normalize = function(word) {
   for (var i = 0; i < this.normalizers.length; i++) {
-    word = this.normalizers[i].normalize(word);
+    var w = this.normalizers[i].normalize(word);
+    if (w) {
+      word = w;
+    } else {
+      return null;
+    }
   }
   return word;
 };
@@ -87,7 +92,11 @@ fullproof.Analyzer.prototype.tokenize = function(text, callback) {
   var len = 0;
   var max = text.length;
   for (var i = 0; i < max; ++i) {
-    if (!functor(text.charCodeAt(i))) {
+    /**
+     * @type {number}
+     */
+    var c = text.charCodeAt(i);
+    if (!functor(c)) {
       len = i - start;
       if (len) {
         callback(start, len);

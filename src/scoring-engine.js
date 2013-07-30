@@ -17,6 +17,7 @@
 
 goog.provide('fullproof.ScoringEngine');
 goog.require('fullproof.Analyzer');
+goog.require('fullproof.ResultSet');
 goog.require('ydn.db.schema.fulltext.Engine');
 
 
@@ -36,9 +37,17 @@ fullproof.ScoringEngine = function(schema) {
   /**
    * @final
    * @protected
-   * @type {fullproof.ScoringAnalyzer}
+   * @type {fullproof.Analyzer}
    */
   this.analyzer = new fullproof.Analyzer(schema);
+};
+
+
+/**
+ * @inheritDoc
+ */
+fullproof.ScoringEngine.prototype.score =function(text, source) {
+  return this.analyzer.score(text, source);
 };
 
 
@@ -46,7 +55,7 @@ fullproof.ScoringEngine = function(schema) {
  * Analyze an indexing value.
  * @param {string} store_name the store name in which document belong.
  * @param {IDBKey} key primary of the document.
- * @param {Object} obj the document to be indexed.
+ * @param {!Object} obj the document to be indexed.
  * @return {Array.<fullproof.ScoreEntry>} score for each token.
  */
 fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
@@ -55,7 +64,7 @@ fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
     var source = this.schema.index(i);
     if (source.getStoreName() == store_name) {
       var text = ydn.db.utils.getValueByKeys(obj, source.getKeyPath());
-      if (text) {
+      if (goog.isString(text)) {
         scores = scores.concat(this.analyzer.score(text, source, key));
       }
     }
@@ -81,21 +90,16 @@ fullproof.ScoringEngine.prototype.rank = function(req) {
   var result_req = req.copy();
   var result = new fullproof.ResultSet();
   req.addProgback(function(x) {
-    var score_entry = /** @type {fullproof.ScoreEntry} */ (x);
-    var scores = values.map(function(v) {
-      var score = fullproof.ScoredEntry.fromJson(v);
-      var ft_index = this.schema.getIndex(v['store_name']);
-      if (ft_index) {
-        score.rescale(ft_index.getWeight());
-      } else if (goog.DEBUG) {
-        throw new Error('full text search primary index store name "' +
-            v['store_name'] + '" not found in ' + this.schema.getName());
-      }
-      return score;
-    });
-    result.merge(scores);
+    var score = /** @type {fullproof.ScoreEntry} */ (x);
+    var store_name = score.getStoreName();
+    var ft_index = this.schema.getIndex(store_name);
+    if (ft_index) {
+      score.rescale(ft_index.getWeight());
+    } else if (goog.DEBUG) {
+      throw new Error('full text search primary index store name "' +
+          store_name + '" not found in ' + this.schema.getName());
+    }
     result_req.notify(result);
-    values.length = 0;
   }, this);
   req.addCallbacks(function() {
     result_req.callback(result);

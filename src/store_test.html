@@ -31,35 +31,35 @@
             reachedFinalContinuation = false;
 
         };
-        var test_inject = function() {
-            var schema = {
-                fullTextIndexes: [{
-                    name: 'test',
-                    lang: 'en',
+        var db_schema = {
+            fullTextIndexes: [{
+                name: 'test',
+                lang: 'en',
 
 
-                    sources: [
-                        {
-                            storeName: 'article',
-                            keyPath: 'title',
-                            weight: 1.0
-                        }, {
-                            storeName: 'article',
-                            keyPath: 'body',
-                            weight: 0.5
-                        }]
-                }],
-                stores: [
+                sources: [
                     {
-                        name: 'article',
-                        keyPath: 'title'
+                        storeName: 'article',
+                        keyPath: 'title',
+                        weight: 1.0
+                    }, {
+                        storeName: 'article',
+                        keyPath: 'body',
+                        weight: 0.5
                     }]
-            };
+            }],
+            stores: [
+                {
+                    name: 'article',
+                    keyPath: 'title'
+                }]
+        };
+        var test_inject = function() {
             var data = {
                 title: 't1',
                 body: 'This is a test for data injection. Only one entry injected'
             };
-            var db = new ydn.db.Storage('test_inject-1', schema);
+            var db = new ydn.db.Storage('test_inject-1', db_schema);
             var done;
             var read_data, schema, keywords;
             waitForCondition(
@@ -89,6 +89,7 @@
             });
             db.keys('test', 'keyword', ydn.db.KeyRange.only('t1')).addBoth(function(x) {
                 keywords = x;
+                console.log(x);
                 done = true;
             });
         };
