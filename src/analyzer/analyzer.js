@@ -37,8 +37,20 @@ fullproof.Analyzer = function(schema) {
    * @protected
    * @type {!Array.<!fullproof.normalizer.Normalizer>}
    */
-  this.normalizers = fullproof.normalizer.english.getNormalizers([]);
+  this.normalizers = this.getNormalizers(schema);
+};
 
+
+/**
+ * @param {ydn.db.schema.fulltext.Index} schema
+ * @return {!Array.<!fullproof.normalizer.Normalizer>}
+ */
+fullproof.Analyzer.prototype.getNormalizers = function(schema) {
+  if (schema.lang == 'en') {
+    return fullproof.normalizer.english.getNormalizers(schema.normalizers);
+  } else {
+    return [];
+  }
 };
 
 

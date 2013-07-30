@@ -1,5 +1,6 @@
 
 goog.provide('net.kornr.unicode');
+goog.require('goog.asserts');
 
 
 /**
@@ -96,16 +97,13 @@ net.kornr.unicode.Normalizer.prototype.normalize = function(str) {
         r = me.normalizer_element_match(c, index);
         if (!(r < 0)) { // a positive integer or an array
           normalize_char_last_index = index; // remember the last successful index for performance
-          goog.asserts.assertNumber(r, 'r');
-          return r;
+          return /** @type {number} */ (r);
         }
       }
       normalize_char_last_index = index; // remember the last successful index for performance
-      goog.asserts.assertNumber(c, 'c');
       return c; // if not found, the codepoint is not in the array, so keep the same value
     } else {
-      goog.asserts.assertNumber(r, 'r2');
-      return r;
+      return /** @type {number} */ (r);
     }
   };
 

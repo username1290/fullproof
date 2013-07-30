@@ -133,7 +133,9 @@
             </exjs.dir>
         </adv-comp>
     </target>
-
+    <target name="gen-all-test-js" description="generate all test js">
+        <gen-js-test base.dir="${ydn-db-text.dir}/src" ext="db"></gen-js-test>
+    </target>
     <target name="compile-core-text" description="generates compiled files for client js">
         <mkdir dir="${ydn-db.dir}/jsc"/>
         <adv-comp
