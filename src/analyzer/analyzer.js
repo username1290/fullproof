@@ -58,13 +58,12 @@ fullproof.Analyzer.prototype.normalize = function(word) {
  * @param {string} text
  * @return {Array.<string>}
  */
-fullproof.Analyzer.prototype.parseAll = function (text) {
+fullproof.Analyzer.prototype.parse = function (text) {
   var result = [];
   // Note: parse is always sync.
-  this.parse(text, function(token) {
-    if (!goog.isNull(token)) {
-      result.push(token);
-    }
+  this.tokenize(text, function(start, len) {
+    var token = text.substr(start, len);
+    result.push(token);
   });
   return result;
 };
@@ -74,23 +73,26 @@ fullproof.Analyzer.prototype.parseAll = function (text) {
  * A simple private parser that relies on the unicode letter/number
  * categories. Word boundaries are whatever is not a letter
  * or a number.
- * @param {string} text
- * @param {function(string)} callback yield each token.
+ * @param {string} text text to parse.
+ * @param {function(number, number)} callback yield start and length for each
+ * token. Length is always larger than 0.
  */
-fullproof.Analyzer.prototype.parse = function(text, callback) {
+fullproof.Analyzer.prototype.tokenize = function(text, callback) {
   var functor = net.kornr.unicode.is_letter_number;
   var start = 0;
+  var len = 0;
   var max = text.length;
   for (var i = 0; i < max; ++i) {
     if (!functor(text.charCodeAt(i))) {
-      if (i - start > 1) {
-        callback(text.substring(start, i));
+      len = i - start;
+      if (len) {
+        callback(start, len);
       }
       start = i;
     }
   }
   if (i - start > 1) {
-    callback(text.substring(start, max));
+    callback(start, len);
   }
 };
 
