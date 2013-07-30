@@ -18,8 +18,9 @@
 
 
 goog.provide('fullproof.Analyzer');
-goog.require('fullproof.ScoredElement');
+goog.require('fullproof.ScoreEntry');
 goog.require('fullproof.normalizer.Normalizer');
+goog.require('goog.array');
 
 
 
@@ -58,7 +59,7 @@ fullproof.Analyzer.prototype.normalize = function(word) {
  * @param {string} text
  * @return {Array.<string>}
  */
-fullproof.Analyzer.prototype.parse = function (text) {
+fullproof.Analyzer.prototype.parse = function(text) {
   var result = [];
   // Note: parse is always sync.
   this.tokenize(text, function(start, len) {
@@ -88,12 +89,44 @@ fullproof.Analyzer.prototype.tokenize = function(text, callback) {
       if (len) {
         callback(start, len);
       }
-      start = i;
+      start = i + 1;
     }
   }
-  if (i - start > 1) {
+  len = max - start;
+  if (len) {
     callback(start, len);
   }
 };
 
+
+/**
+ * @param {Array.<string>} tokens
+ * @param {ydn.db.schema.FullTextSource} source
+ * @param {IDBKey=} opt_key primary key.
+ * @return {Array.<fullproof.ScoreEntry>} scores for each unique token.
+ */
+fullproof.Analyzer.prototype.score = function(tokens, source, opt_key) {
+  var nTokens = [];
+  for (var i = 0; i < tokens.length; i++) {
+    nTokens[i] = this.normalize(tokens[i]);
+  }
+  var store_name = source ? source.getStoreName() : undefined;
+  var key_path = source ? source.getKeyPath() : undefined;
+  var scores = [];
+  var wordcount = 0;
+  for (var i = 0; i < tokens.length; i++) {
+    var word = nTokens[i];
+    var score = goog.array.find(scores, function(s) {
+      return s.getKey() == word;
+    });
+    if (!score) {
+      score = new fullproof.ScoreEntry(word, tokens[i],
+          store_name, key_path, opt_key);
+      scores.push(score);
+    }
+    score.encounter(++wordcount);
+  }
+
+  return scores;
+};
 

@@ -56,7 +56,7 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
  * Full text search query.
  * @param {string} name full text search index name.
  * @param {string} query text query.
- * @return {!ydn.db.Request}
+ * @return {!ydn.db.Request} search request.
  */
 ydn.db.crud.Storage.prototype.search = function(name, query) {
   var ft_schema = this.schema.getFullTextSchema(name);

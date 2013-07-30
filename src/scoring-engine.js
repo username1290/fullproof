@@ -53,7 +53,7 @@ fullproof.ScoringEngine = function(schema) {
  * @param {string} store_name the store name in which document belong.
  * @param {IDBKey} key primary of the document.
  * @param {Object} obj the document to be indexed.
- * @return {Array.<ydn.db.schema.fulltext.Score>} score for each token.
+ * @return {Array.<fullproof.ScoreEntry>} score for each token.
  */
 fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
   var scores = [];
@@ -77,7 +77,7 @@ fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
  * @return {Array.<string>} list of tokens.
  */
 fullproof.ScoringEngine.prototype.parse = function(query) {
-  return this.analyzer.parseAll(query);
+  return this.analyzer.parse(query);
 };
 
 
@@ -124,32 +124,5 @@ fullproof.ScoringEngine.prototype.normalize = function(tokens) {
     nTokens[i] = this.analyzer.normalize(tokens[i]);
   }
   return nTokens;
-};
-
-
-/**
- * @param {Array.<string>} tokens
- * @param {ydn.db.schema.FullTextSource} source
- * @param {IDBKey=} opt_key primary key.
- * @return {Array.<ydn.db.schema.fulltext.Score>} scores for each unique token.
- */
-fullproof.ScoringEngine.prototype.score = function(tokens, source, opt_key) {
-  var nTokens = this.normalize(tokens);
-  var scores = [];
-  var wordcount = 0;
-  for (var i = 0; i < tokens.length; i++) {
-    var word = nTokens[i];
-    var score = goog.array.find(scores, function(s) {
-      return s.getKey() == word;
-    });
-    if (!score) {
-      score = new ydn.db.schema.fulltext.Score(word, tokens[i],
-          source.getStoreName(), source.getKeyPath(), opt_key);
-      scores.push(score);
-    }
-    score.encounter(wordcount);
-  }
-
-  return scores;
 };
 
