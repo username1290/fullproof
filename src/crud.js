@@ -52,6 +52,21 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
         // console.log(json);
         me.getCoreOperator().dumpInternal(ft_schema.getName(), json);
       }, this);
+    } else if (rq.getMethod() == ydn.db.Request.Method.PUTS) {
+      var arr = /** @type {Array} */ (args[1]);
+      var store_name = store.getName();
+      rq.addCallback(function(keys) {
+        for (var i = 0; i < keys.length; i++) {
+          var doc = /** @type {!Object} */ (arr[i]);
+          var p_key = /** @type {IDBKey} */ (keys[i]);
+          var scores = ft_schema.engine.analyze(store_name, p_key, doc);
+          var json = scores.map(function(x) {
+            return x.toJson();
+          });
+          // window.console.log(json);
+          me.getCoreOperator().dumpInternal(ft_schema.getName(), json);
+        }
+      }, this);
     }
   };
   store.addHook(indexer);
