@@ -214,7 +214,7 @@ fullproof.ScoreEntry.prototype.toJson = function() {
   return {
     'storeName': this.store_name,
     'primaryKey': this.primary_key,
-    'key': this.key,
+    'keyword': this.key,
     'keyPath': this.key_path,
     'position': this.position,
     'value': this.value,
@@ -228,7 +228,7 @@ fullproof.ScoreEntry.prototype.toJson = function() {
  * @return {!fullproof.ScoreEntry}
  */
 fullproof.ScoreEntry.fromJson = function(json) {
-  return new fullproof.ScoreEntry(json['key'], json['value'], json['position'],
+  return new fullproof.ScoreEntry(json['keyword'], json['value'], json['position'],
       json['storeName'], json['keyPath'], json['primaryKey'], json['score']);
 };
 

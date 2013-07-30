@@ -20,21 +20,24 @@
 goog.provide('fullproof.Analyzer');
 goog.require('fullproof.ScoreEntry');
 goog.require('fullproof.normalizer.Normalizer');
+goog.require('fullproof.normalizer.english');
 goog.require('goog.array');
+goog.require('net.kornr.unicode');
 
 
 
 /**
  * A prototype for Analyzers objects.
- * @param {Array.<fullproof.normalizer.Normalizer>} normalizers
+ * @param {ydn.db.schema.fulltext.Index} schema
  * @constructor
  */
-fullproof.Analyzer = function(normalizers) {
+fullproof.Analyzer = function(schema) {
   /**
+   * @final
    * @protected
-   * @type {Array.<fullproof.normalizer.BasicNormalizer>}
+   * @type {!Array.<!fullproof.normalizer.Normalizer>}
    */
-  this.normalizers = normalizers || [];
+  this.normalizers = fullproof.normalizer.english.getNormalizers([]);
 
 };
 

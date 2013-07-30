@@ -16,7 +16,7 @@
 
 
 goog.provide('fullproof.ScoringEngine');
-goog.require('fullproof.ScoredEntry');
+goog.require('fullproof.Analyzer');
 goog.require('ydn.db.schema.fulltext.Engine');
 
 
@@ -36,16 +36,9 @@ fullproof.ScoringEngine = function(schema) {
   /**
    * @final
    * @protected
-   * @type {!Array.<!fullproof.normalizer.Normalizer>}
-   */
-  this.normalizers = fullproof.normalizer.english.getNormalizers(
-      schema.getNormalizers());
-  /**
-   * @final
-   * @protected
    * @type {fullproof.ScoringAnalyzer}
    */
-  this.analyzer = new fullproof.Analyzer(this.normalizers);
+  this.analyzer = new fullproof.Analyzer(schema);
 };
 
 
@@ -63,8 +56,7 @@ fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
     if (source.getStoreName() == store_name) {
       var text = ydn.db.utils.getValueByKeys(obj, source.getKeyPath());
       if (text) {
-        var tokens = this.parse(text);
-        scores = scores.concat(this.score(tokens, source, key));
+        scores = scores.concat(this.analyzer.score(text, source, key));
       }
     }
   }

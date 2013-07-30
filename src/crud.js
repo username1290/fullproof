@@ -19,6 +19,10 @@
  * @author kyawtun@yathit.com (Kyaw Tun)
  */
 
+// namespace for full-text search index
+goog.provide('ydn.db.crud.Storage.text');
+goog.require('fullproof.ScoringEngine');
+
 
 /**
  * Add full text indexer
@@ -40,11 +44,12 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
       var store_name = store.getName();
       rq.addCallback(function(key) {
         var p_key = /** @type {IDBKey} */ (key);
-        var scores = this.engine.analyze(store_name, p_key, doc);
+        var scores = ft_schema.engine.analyze(store_name, p_key, doc);
         var json = scores.map(function(x) {
           return x.toJson();
         });
-        me.getCoreOperator().dumpInternal(store_name, json);
+        console.log(json);
+        me.getCoreOperator().dumpInternal(ft_schema.getName(), json);
       }, this);
     }
   };
