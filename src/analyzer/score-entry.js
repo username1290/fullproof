@@ -20,6 +20,7 @@
 
 
 goog.provide('fullproof.ScoreEntry');
+goog.require('ydn.db.schema.fulltext.Index');
 
 
 
@@ -79,10 +80,27 @@ fullproof.ScoreEntry = function(keyword, value, position, opt_store_name,
    */
   this.encounter_count_ = [];
   /**
+   * This is computed lazily.
+   * @see #getId
+   * @type {number}
    * @private
-   * @type {!Array.<!fullproof.ScoreEntry>}
    */
-  this.results_ = [];
+  this.id_ = NaN;
+  /**
+   * If this entry represents an result, parent query entry is defined.
+   * @type {fullproof.ScoreEntry} parent query.
+   */
+  this.query = null;
+  /**
+   * If this entry represents an query entry, left entry is defined.
+   * @type {fullproof.ScoreEntry} parent query.
+   */
+  this.left = null;
+  /**
+   * If this entry represents an query entry, right entry is defined.
+   * @type {fullproof.ScoreEntry} parent query.
+   */
+  this.right = null;
 };
 
 
@@ -91,6 +109,14 @@ fullproof.ScoreEntry = function(keyword, value, position, opt_store_name,
  */
 fullproof.ScoreEntry.prototype.getKeyword = function() {
   return this.key;
+};
+
+
+/**
+ * @return {string} source store name.
+ */
+fullproof.ScoreEntry.prototype.getValue = function() {
+  return this.value;
 };
 
 
@@ -145,29 +171,6 @@ fullproof.ScoreEntry.prototype.compute = function() {
 
 
 /**
- * Set search results of this keyword.
- * @param {Array} results database lookup entries.
- */
-fullproof.ScoreEntry.prototype.setResult = function(results) {
-  if (results) {
-    this.results_ = results.map(function(json) {
-      return fullproof.ScoreEntry.fromJson(json);
-    });
-  } else {
-    this.results_.length = 0;
-  }
-};
-
-
-/**
- * @return {!Array.<!fullproof.ScoreEntry>} results database lookup entries.
- */
-fullproof.ScoreEntry.prototype.getResult = function(results) {
-  return this.results_;
-};
-
-
-/**
  * Rescale the score.
  * @param {number} scale scale value to multiply the score.
  */
@@ -176,13 +179,20 @@ fullproof.ScoreEntry.prototype.rescale = function(scale) {
   this.score *= scale;
 };
 
-fullproof.ScoreEntry.cmp = {
-  lower_than: function(a,b) {
-    return a.value < b.value;
-  },
-  equals: function(a,b) {
-    return a.value == b.value;
-  }
+
+/**
+ * Compare by score, then by id.
+ * Note: this result 0 only if same entry is compared.
+ * @param {fullproof.ScoreEntry} a entry a.
+ * @param {fullproof.ScoreEntry} b entry b.
+ * @return {number} return 1 if score of entry a is larger than that of b, -1
+ * if score of entry b is larger than a, otherwise compare by id.
+ */
+fullproof.ScoreEntry.cmp = function(a, b) {
+  var a_score = a.getScore();
+  var b_score = b.getScore();
+  return a > b ? 1 : b > a ? -1 :
+      a.getId() > b.getId() ? 1 : a.getId() < b.getId() ? -1 : 0;
 };
 
 
@@ -199,10 +209,17 @@ fullproof.ScoreEntry.mergeFn = function(a,b) {
 
 
 /**
- * @return {string}
+ * Uniquely identify this entry.
+ * @return {number} Entry identifier.
  */
-fullproof.ScoreEntry.prototype.getKey = function() {
-  return this.key;
+fullproof.ScoreEntry.prototype.getId = function() {
+  if (isNaN(this.id_)) {
+    var st = this.store_name || '';
+    var kp = this.key_path || '';
+    var p = this.position || 0;
+    this.id_ = goog.string.hashCode(st + kp + p + this.key);
+  }
+  return this.id_;
 };
 
 

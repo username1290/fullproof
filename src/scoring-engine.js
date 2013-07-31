@@ -86,19 +86,10 @@ fullproof.ScoringEngine.prototype.parse = function(query) {
 /**
  * @inheritDoc
  */
-fullproof.ScoringEngine.prototype.rank = function(req) {
+fullproof.ScoringEngine.prototype.rank = function(req, result) {
   var result_req = req.copy();
-  var result = new fullproof.ResultSet();
   req.addProgback(function(x) {
     var score = /** @type {fullproof.ScoreEntry} */ (x);
-    var store_name = score.getStoreName();
-    var ft_index = this.schema.getIndex(store_name);
-    if (ft_index) {
-      score.rescale(ft_index.getWeight());
-    } else if (goog.DEBUG) {
-      throw new Error('full text search primary index store name "' +
-          store_name + '" not found in ' + this.schema.getName());
-    }
     result_req.notify(result);
   }, this);
   req.addCallbacks(function() {

@@ -149,7 +149,7 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
   for (var i = 0; i < tokens.length; i++) {
     var word = nTokens[i];
     var score = goog.array.find(scores, function(s) {
-      return s.getKey() == word;
+      return s.getKeyword() == word;
     });
     if (!score) {
       score = new fullproof.ScoreEntry(word, tokens[i], positions[i],
