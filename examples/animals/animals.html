@@ -55,6 +55,11 @@
             color: black;
             background-color: white;
         }
+        #ref {
+            position: fixed;
+            bottom: 2em;
+            padding: 4px;
+        }
         #status {
             background-color: #d3d3d3;
             position: fixed;
@@ -68,23 +73,22 @@
 <body>
 <h1>Animal Database</h1>
 
-<div>
+<div style="margin: 1em" id="application">
+    Type an animal name here:
+    <div>
+        <input type="text" id="search_input" class="typebox">
+        <button id="search">Search</button>
+    </div>
+    <div style="clear:both" id="results">
+    </div>
+</div>
+<div id="ref">
     This application provides an example of fulltext search in the species
     database from
     the <a href="http://gapanalysis.usgs.gov/data/species-data/">U.S. Geological
     Survey Gap Analysis Program</a>
 </div>
 
-
-<div style="margin: 1em" id="application">
-    Type an animal name here:
-    <div>
-        <input type="text" id="typehere" class="typebox">
-        <button id="search">Search</button>
-    </div>
-    <div style="clear:both" id="results">
-    </div>
-</div>
 <div id="status">
     starting...
 </div>

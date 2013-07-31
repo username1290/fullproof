@@ -23,6 +23,7 @@ goog.require('fullproof.normalizer.Normalizer');
 goog.require('fullproof.normalizer.english');
 goog.require('goog.array');
 goog.require('net.kornr.unicode');
+goog.require('ydn.db.schema.fulltext.Index');
 
 
 

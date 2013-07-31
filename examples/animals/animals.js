@@ -25,6 +25,33 @@ var Animals = function() {
       }]
   };
   this.db = new ydn.db.Storage('animals', db_schema);
+  var btn_search = document.getElementById('search');
+  btn_search.addEventListener('click', this.handleSearch.bind(this));
+  var input = document.getElementById('search_input');
+  input.onkeyup = this.handleInputChanged.bind(this);
+};
+
+
+Animals.prototype.handleInputChanged = function(e) {
+  var key = event.keyCode || event.which;
+  if (key == 13) {
+    this.handleSearch(e);
+  }
+};
+
+
+/**
+ * @param {Event} e
+ */
+Animals.prototype.handleSearch = function(e) {
+  var ele = document.getElementById('search_input');
+  var rq = this.db.search('name', ele.value);
+  rq.addProgback(function(pe) {
+    console.log(pe);
+  }, this);
+  rq.addCallback(function(pe) {
+    console.log(pe);
+  }, this);
 };
 
 

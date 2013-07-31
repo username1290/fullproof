@@ -30,6 +30,7 @@ goog.require('ydn.db.KeyRange');
  * @param {number} threshold Threshold score of a result to consider as
  * satisfactory.
  * @implements {ydn.db.schema.fulltext.ResultSet}
+ * @struct
  */
 fullproof.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
   /**
