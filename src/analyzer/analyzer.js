@@ -18,18 +18,18 @@
 
 
 goog.provide('fullproof.Analyzer');
-goog.require('fullproof.ScoreEntry');
+goog.require('ydn.db.text.ResultSet');
 goog.require('fullproof.normalizer.Normalizer');
 goog.require('fullproof.normalizer.english');
 goog.require('goog.array');
 goog.require('net.kornr.unicode');
-goog.require('ydn.db.schema.fulltext.Index');
+goog.require('ydn.db.schema.fulltext.Catalog');
 
 
 
 /**
  * A prototype for Analyzers objects.
- * @param {ydn.db.schema.fulltext.Index} schema
+ * @param {ydn.db.schema.fulltext.Catalog} schema
  * @constructor
  */
 fullproof.Analyzer = function(schema) {
@@ -43,7 +43,7 @@ fullproof.Analyzer = function(schema) {
 
 
 /**
- * @param {ydn.db.schema.fulltext.Index} schema
+ * @param {ydn.db.schema.fulltext.Catalog} schema
  * @return {!Array.<!fullproof.normalizer.Normalizer>}
  */
 fullproof.Analyzer.prototype.getNormalizers = function(schema) {
@@ -126,9 +126,9 @@ fullproof.Analyzer.prototype.tokenize = function(text, callback) {
 
 /**
  * @param {string} text text to be prase and scored.
- * @param {ydn.db.schema.FullTextSource} source
+ * @param {ydn.db.schema.fulltext.InvIndex} source
  * @param {IDBKey=} opt_key primary key.
- * @return {Array.<fullproof.ScoreEntry>} scores for each unique token.
+ * @return {Array.<ydn.db.text.QueryEntry>} scores for each unique token.
  */
 fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
   var tokens = [];
@@ -153,7 +153,7 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
       return s.getKeyword() == word;
     });
     if (!score) {
-      score = new fullproof.ScoreEntry(word, tokens[i], positions[i],
+      score = new ydn.db.text.QueryEntry(word, tokens[i], positions[i],
           store_name, key_path, opt_key);
       scores.push(score);
     }

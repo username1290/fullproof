@@ -17,13 +17,12 @@
 
 goog.provide('fullproof.ScoringEngine');
 goog.require('fullproof.Analyzer');
-goog.require('fullproof.ResultSet');
 goog.require('ydn.db.schema.fulltext.Engine');
 
 
 
 /**
- * @param {ydn.db.schema.fulltext.Index} schema full text search schema.
+ * @param {ydn.db.schema.fulltext.Catalog} schema full text search schema.
  * @constructor
  * @implements {ydn.db.schema.fulltext.Engine}
  */
@@ -31,7 +30,7 @@ fullproof.ScoringEngine = function(schema) {
   /**
    * @final
    * @protected
-   * @type {ydn.db.schema.fulltext.Index}
+   * @type {ydn.db.schema.fulltext.Catalog}
    */
   this.schema = schema;
   /**
@@ -46,7 +45,7 @@ fullproof.ScoringEngine = function(schema) {
 /**
  * @inheritDoc
  */
-fullproof.ScoringEngine.prototype.score =function(text, source) {
+fullproof.ScoringEngine.prototype.score = function(text, source) {
   return this.analyzer.score(text, source);
 };
 
@@ -56,7 +55,7 @@ fullproof.ScoringEngine.prototype.score =function(text, source) {
  * @param {string} store_name the store name in which document belong.
  * @param {IDBKey} key primary of the document.
  * @param {!Object} obj the document to be indexed.
- * @return {Array.<fullproof.ScoreEntry>} score for each token.
+ * @return {Array.<ydn.db.text.QueryEntry>} score for each token.
  */
 fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
   var scores = [];
@@ -89,7 +88,7 @@ fullproof.ScoringEngine.prototype.parse = function(query) {
 fullproof.ScoringEngine.prototype.rank = function(req, result) {
   var result_req = req.copy();
   req.addProgback(function(x) {
-    var score = /** @type {fullproof.ScoreEntry} */ (x);
+    var score = /** @type {ydn.db.text.QueryEntry} */ (x);
     result_req.notify(result);
   }, this);
   req.addCallbacks(function() {

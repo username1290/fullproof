@@ -1,4 +1,4 @@
-// Copyright 2012 YDN Authors. All Rights Reserved.
+// Copyright 2013 YDN Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ goog.require('ydn.db.schema.fulltext.Entry');
  * @param {number=} opt_score score.
  * @constructor
  * @extends {ydn.db.schema.fulltext.Entry}
+ * @struct
  */
 ydn.db.text.IndexEntry = function(keyword, value, position, opt_store_name,
                                   opt_key_path, opt_p_key, opt_score) {

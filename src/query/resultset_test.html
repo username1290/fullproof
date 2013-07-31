@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>ResultSet test</title>
-    <script src="../../closure-library/closure/goog/base.js"></script>
-    <script src="../../ydn-base/js/deps.js"></script>
-    <script src="../../ydn-db/js/deps.js"></script>
-    <script type="text/javascript" src="../src/deps.js"></script>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../ydn-base/js/deps.js"></script>
+    <script src="../../../ydn-db/js/deps.js"></script>
+    <script type="text/javascript" src="../deps.js"></script>
     <script type="text/javascript">
         goog.require('fullproof.ResultSet');
     </script>
@@ -14,7 +14,7 @@
 <body>
     <script type="text/javascript">
         goog.require('goog.testing.jsunit');
-        var ft_schema = ydn.db.schema.fulltext.Index.fromJson({
+        var ft_schema = ydn.db.schema.fulltext.InvIndex.fromJson({
             name: 'test',
             lang: 'en',
             sources: [
@@ -28,7 +28,7 @@
                     weight: 0.5
                 }]
         });
-        var query = new fullproof.ScoreEntry('first', 'first', 0, 'article', 'title');
+        var query = new ydn.db.text.QueryEntry('first', 'first', 0, 'article', 'title');
 
         var test_add_result = function() {
             var rs = new fullproof.ResultSet(ft_schema, [query], 10, 1);

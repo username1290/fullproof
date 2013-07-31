@@ -1,22 +1,27 @@
-/*
- * Copyright 2012 Rodrigo Reyes
+// Copyright 2013 YDN Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS-IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * @fileoverview Indexed entry.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * @author kyawtun@yathit.com (Kyaw Tun)
  */
 
-goog.provide('fullproof.ResultSet');
-goog.require('fullproof.ScoreEntry');
+goog.provide('ydn.db.text.ResultSet');
 goog.require('ydn.db.KeyRange');
+goog.require('ydn.db.text.QueryEntry');
+goog.require('ydn.db.text.ResultEntry');
 
 
 
@@ -24,28 +29,28 @@ goog.require('ydn.db.KeyRange');
  * Result set.
  *
  * @constructor
- * @param {ydn.db.schema.fulltext.Index} ft_schema full text schema.
- * @param {Array.<fullproof.ScoreEntry>} query_tokens query tokens.
+ * @param {ydn.db.schema.fulltext.Catalog} ft_schema full text schema.
+ * @param {Array.<ydn.db.text.QueryEntry>} query_tokens query tokens.
  * @param {number} limit Maximum number of satisfactory results.
  * @param {number} threshold Threshold score of a result to consider as
  * satisfactory.
  * @implements {ydn.db.schema.fulltext.ResultSet}
  * @struct
  */
-fullproof.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
+ydn.db.text.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
   /**
    * @protected
-   * @type {ydn.db.schema.fulltext.Index}
+   * @type {ydn.db.schema.fulltext.Catalog}
    */
   this.ft_schema = ft_schema;
   /**
    * @protected
-   * @type {Array.<fullproof.ScoreEntry>}
+   * @type {Array.<ydn.db.text.QueryEntry>}
    */
   this.query_tokens = query_tokens || [];
   /**
    * @protected
-   * @type {Array.<fullproof.ScoreEntry>}
+   * @type {Array.<ydn.db.text.ResultEntry>}
    */
   this.results = [];
   /**
@@ -67,8 +72,7 @@ fullproof.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
    */
   this.i_type_ = 0;
   for (var i = 0; i < this.query_tokens.length; i++) {
-    this.query_tokens[i].left = this.query_tokens[i - 1] || null;
-    this.query_tokens[i].right = this.query_tokens[i + 1] || null;
+    this.query_tokens[i].resultset = this;
   }
 };
 
@@ -77,19 +81,17 @@ fullproof.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
  * @const
  * @type {Array.<string>}
  */
-fullproof.ResultSet.Q_TYPES = ['value', 'keyword', 'value', 'keyword'];
+ydn.db.text.ResultSet.Q_TYPES = ['value', 'keyword', 'value', 'keyword'];
 
 
 /**
- * Next database lookup.
- * @param {function(string, string, ydn.db.KeyRange,
- * fullproof.ScoreEntry)} cb callback for next query.
+ * @inheritDoc
  */
-fullproof.ResultSet.prototype.nextLookup = function(cb) {
-  if (this.i_type_ > fullproof.ResultSet.Q_TYPES.length) {
+ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
+  if (this.i_type_ > ydn.db.text.ResultSet.Q_TYPES.length) {
     return;
   }
-  var index_name = fullproof.ResultSet.Q_TYPES[this.i_type_];
+  var index_name = ydn.db.text.ResultSet.Q_TYPES[this.i_type_];
   for (var i = 0; i < this.ft_schema.count(); i++) {
     var index_schema = this.ft_schema.index(i);
     var store_name = index_schema.getStoreName();
@@ -112,7 +114,7 @@ fullproof.ResultSet.prototype.nextLookup = function(cb) {
  * than or equal to threadhold value.
  * @return {number} number of results.
  */
-fullproof.ResultSet.prototype.count = function(opt_only_satisfactory) {
+ydn.db.text.ResultSet.prototype.count = function(opt_only_satisfactory) {
   if (opt_only_satisfactory && !isNaN(this.threshold)) {
     var cnt = 0;
     for (var i = 0; i < this.results.length; i++) {
@@ -132,11 +134,13 @@ fullproof.ResultSet.prototype.count = function(opt_only_satisfactory) {
 /**
  * @inheritDoc
  */
-fullproof.ResultSet.prototype.addResult = function(query, results) {
+ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
-    var entry = fullproof.ScoreEntry.fromJson(results[i]);
-    entry.query = query;
-    goog.array.binaryInsert(this.results, entry, fullproof.ScoreEntry.cmp);
+    var sc = results['source'];
+    var source = this.ft_schema.getSource(sc['storeName'], sc['keyPath']);
+    var entry = new ydn.db.text.ResultEntry(source, query, results[i]);
+    goog.array.binaryInsert(this.results, entry,
+        ydn.db.schema.fulltext.Entry.cmp);
   }
   return this.count(true) <= this.limit;
 };

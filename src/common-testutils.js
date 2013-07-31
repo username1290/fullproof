@@ -1,12 +1,12 @@
 goog.provide('fullproof.tests');
-goog.require('fullproof.ScoreEntry');
+goog.require('ydn.db.text.ResultEntry');
 
-fullproof.ScoreEntry.prototype.mkRandom = function(maxValue) {
+ydn.db.text.ResultEntry.prototype.mkRandom = function(maxValue) {
   var word = 'xxxxxx'.replace(/./g, function(c) {
     return String.fromCharCode(65 + parseInt(Math.random() * 26));
   });
   var value = parseInt(Math.random() * maxValue);
-  var result = new fullproof.ScoreEntry(word, value, Math.random() * 2);
+  var result = new ydn.db.text.ResultEntry(word, value, Math.random() * 2);
   return result;
 };
 
@@ -53,7 +53,7 @@ fullproof.tests.genericComparator = {
 fullproof.tests.makeResultSetOfScoredEntries = function(count, maxValue) {
   var result = new fullproof.ResultSet(fullproof.tests.genericComparator);
   for (var i = 0; i < count; ++i) {
-    result.insert(fullproof.ScoreEntry.prototype.mkRandom(maxValue));
+    result.insert(ydn.db.text.ResultEntry.prototype.mkRandom(maxValue));
   }
   return result;
 };
@@ -69,7 +69,7 @@ fullproof.tests.makeResultSetOfScoredEntriesObjects = function(count) {
 //					value: parseInt(Math.random()*100)
     };
 
-    result.insert(new fullproof.ScoreEntry(fullproof.tests.mkRandomString(10), obh, Math.random() * 20));
+    result.insert(new ydn.db.text.ResultEntry(fullproof.tests.mkRandomString(10), obh, Math.random() * 20));
   }
   return result;
 };
