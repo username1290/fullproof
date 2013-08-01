@@ -26,38 +26,34 @@ goog.require('ydn.db.text.Entry');
 
 /**
  * Index entry for scoring keyword.
- * @param {string?} store_name inverted index schema.
- * @param {string?} key_path inverted index schema.
- * @param {IDBKey?} key source primary key.
+ * @param {Array} id inverted index schema.
  * @param {string} keyword normalized value of original word.
- * @param {string} value original word.
  * @param {Array.<number>=} opt_positions score.
  * @param {number=} opt_score score.
  * @constructor
  * @extends {ydn.db.text.Entry}
  * @struct
  */
-ydn.db.text.IndexEntry = function(store_name, key_path, key, keyword, value,
-                                  opt_positions, opt_score) {
-  goog.base(this, keyword, value, opt_score);
+ydn.db.text.IndexEntry = function(id, keyword, opt_positions, opt_score) {
+  goog.base(this, keyword, id[3], opt_score);
   /**
    * @final
    * @type {string?}
    * @protected
    */
-  this.store_name = store_name;
+  this.store_name = id[0];
   /**
    * @final
    * @type {string?}
    * @protected
    */
-  this.key_path = key_path;
+  this.key_path = id[1];
   /**
    * @final
    * @type {IDBKey?}
    * @protected
    */
-  this.primary_key = key;
+  this.primary_key = id[2];
   /**
    * Word count that this keyword encounter in the document.
    * @final

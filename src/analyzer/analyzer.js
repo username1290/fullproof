@@ -184,8 +184,8 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
     nTokens[i] = this.normalize(tokens[i]);
   }
 
-  var store_name = source ? source.getStoreName() : null;
-  var key_path = source ? source.getKeyPath() : null;
+  var store_name = source.getStoreName();
+  var key_path = source.getKeyPath();
   var key = opt_key || null;
   var scores = [];
   var wordcount = 0;
@@ -196,8 +196,8 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
         return s.getKeyword() == word;
       });
       if (!score) {
-        score = new ydn.db.text.IndexEntry(store_name, key_path, key,
-            word, tokens[i]);
+        score = new ydn.db.text.IndexEntry([store_name, key_path, key,
+          tokens[i]], word);
         scores.push(score);
       }
       score.encounter(++wordcount);

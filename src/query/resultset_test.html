@@ -39,12 +39,8 @@
                   keyword: 'first' + i,
                   value: 'first' + i,
                   score: 1,
-                  source: {
-                      storeName: 'article',
-                      keyPath: 'title',
-                      primaryKey: '1',
-                      positions: [2]
-                  }
+                  positions: [2],
+                  id: ['article','title', 'key' + i, 'first']
               }
             }
             rs.addResult(query, results);
@@ -58,12 +54,8 @@
                     keyword: 'first' + i,
                     value: 'first' + i,
                     score: 1,
-                    source: {
-                        storeName: 'article',
-                        keyPath: 'title',
-                        primaryKey: '1',
-                        position: i
-                    }
+                    positions: [2],
+                    id: ['article', 'title', 'key' + i, 'first']
                 }
             }
             rs.addResult(query, results);
@@ -73,12 +65,8 @@
                     key: 'second' + i,
                     value: 'second' + i,
                     score: 1,
-                    source: {
-                        storeName: 'article',
-                        keyPath: 'title',
-                        primaryKey: '1',
-                        position: i
-                    }
+                    positions: [2],
+                    id: ['article', 'body', 'key' + i, 'first']
                 }
             }
             rs.addResult(query, results);

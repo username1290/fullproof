@@ -20,6 +20,7 @@
 
 
 goog.provide('ydn.db.text.Entry');
+goog.require('goog.userAgent.product');
 goog.require('ydn.db.schema.fulltext.Entry');
 goog.require('ydn.db.utils');
 
@@ -62,7 +63,7 @@ ydn.db.text.Entry = function(keyword, value, opt_position, opt_score) {
   /**
    * This is computed lazily.
    * @see #getId
-   * @type {string|undefined}
+   * @type {IDBKey|undefined}
    * @private
    */
   this.id_ = undefined;
@@ -111,7 +112,7 @@ ydn.db.text.Entry.cmp = function(a, b) {
 
 /**
  * @protected
- * @return {Array}
+ * @return {!Array}
  */
 ydn.db.text.Entry.prototype.getSignature = function() {
   var p = this.position || 0;
@@ -120,13 +121,26 @@ ydn.db.text.Entry.prototype.getSignature = function() {
 
 
 /**
+ * @final
+ * @type {boolean}
+ */
+ydn.db.text.Entry.isArrayKeyPathSupported = goog.userAgent.product.CHROME &&
+    goog.userAgent.product.FIREFOX;
+
+
+/**
  * Uniquely identify this entry.
- * @return {string} Entry identifier.
+ * @return {IDBKey} Entry identifier.
  * @final
  */
 ydn.db.text.Entry.prototype.getId = function() {
   if (!goog.isDefAndNotNull(this.id_)) {
-    this.id_ = ydn.db.utils.encodeKey(this.getSignature());
+    var sig = this.getSignature();
+    if (ydn.db.text.Entry.isArrayKeyPathSupported) {
+      this.id_ = sig;
+    } else {
+      this.id_ = ydn.db.utils.encodeKey(sig);
+    }
   }
   return this.id_;
 };
