@@ -26,14 +26,13 @@ goog.require('ydn.db.text.IndexEntry');
 
 /**
  * Index entry for scoring keyword.
- * @param {ydn.db.schema.fulltext.InvIndex} index index source.
  * @param {ydn.db.text.QueryEntry} query query entry belong to this result.
  * @param {Object} json entry JSON read from the database.
  * @constructor
  * @extends {ydn.db.text.IndexEntry}
  * @struct
  */
-ydn.db.text.ResultEntry = function(index, query, json) {
+ydn.db.text.ResultEntry = function(query, json) {
   var id = json['id'];
   if (goog.isString(id)) {
     id = ydn.db.utils.decodeKey(id);
@@ -42,29 +41,12 @@ ydn.db.text.ResultEntry = function(index, query, json) {
       'invalid.');
   goog.base(this, id, json['keyword'], json['positions'], json['score']);
   /**
-   * @type {ydn.db.schema.fulltext.InvIndex}
-   */
-  this.index = index;
-  /**
    * @type {ydn.db.text.QueryEntry}
    */
   this.query = query;
 };
 goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.IndexEntry);
 
-
-/**
- * @return {number} element score.
- */
-ydn.db.text.ResultEntry.prototype.getScore = function() {
-  var query_weight = this.query ? this.query.getWeight() : 1;
-  var index_weight = this.index ? this.index.getWeight() : 1;
-  goog.asserts.assert(goog.isNumber(query_weight) && !isNaN(query_weight),
-      'query_weight');
-  goog.asserts.assert(goog.isNumber(index_weight) && !isNaN(index_weight),
-      'index_weight');
-  return this.score * query_weight * index_weight;
-};
 
 
 

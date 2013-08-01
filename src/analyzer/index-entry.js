@@ -116,11 +116,13 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
 /**
  * @override
  */
-ydn.db.text.IndexEntry.prototype.getSignature = function() {
+ydn.db.text.IndexEntry.prototype.getId = function() {
   var st = this.store_name || '';
   var kr = this.primary_key || '';
   var kp = this.key_path || '';
-  return [st, kr, kp, this.value];
+  var id = [st, kr, kp, this.value];
+  return ydn.db.text.Entry.isArrayKeyPathSupported ?
+      id : ydn.db.utils.encodeKey(id);
 };
 
 

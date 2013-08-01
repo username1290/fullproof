@@ -34,7 +34,13 @@ goog.require('ydn.db.text.Entry');
  * @struct
  */
 ydn.db.text.QueryEntry = function(keyword, value, position) {
-  goog.base(this, keyword, value, position);
+  goog.base(this, keyword, value);
+  /**
+   * Location of the keyword in the document or query string.
+   * @final
+   * @type {number}
+   */
+  this.position = position;
   /**
    * @type {ydn.db.text.ResultSet}
    */
@@ -57,4 +63,12 @@ ydn.db.text.QueryEntry.prototype.getScore = function() {
  */
 ydn.db.text.QueryEntry.prototype.getWeight = function() {
   return 1;
+};
+
+
+/**
+ * @override
+ */
+ydn.db.text.QueryEntry.prototype.getId = function() {
+  return this.value + '|' + this.position;
 };

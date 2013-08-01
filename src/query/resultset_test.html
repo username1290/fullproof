@@ -49,28 +49,29 @@
         var test_add_results = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             var results = [];
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < 2; i++) {
                 results[i] = {
                     keyword: 'first' + i,
-                    value: 'first' + i,
                     score: 1,
                     positions: [2],
                     id: ['article', 'title', 'key' + i, 'first']
                 }
             }
             rs.addResult(query, results);
-            results = [];
-            for (var i = 0; i < 3; i++) {
-                results[i] = {
-                    key: 'second' + i,
-                    value: 'second' + i,
+            results = [{
+                    key: 'second',
                     score: 1,
-                    positions: [2],
-                    id: ['article', 'body', 'key' + i, 'first']
-                }
+                    positions: [10],
+                    id: ['article', 'body', 'key' + 1, 'FST']
+                }, {
+                key: 'third',
+                score: 0.5,
+                positions: [3],
+                id: ['article', 'body', 'key' + 5, 'FST']
             }
+            ];
             rs.addResult(query, results);
-            assertEquals(7, rs.count());
+            assertEquals(3, rs.count());
         };
 
     </script>

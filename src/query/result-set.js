@@ -145,13 +145,9 @@ ydn.db.text.ResultSet.prototype.getStoreList = function() {
 ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
     var result = results[i];
-    var entry = new ydn.db.text.ResultEntry(null,
+    var entry = new ydn.db.text.ResultEntry(
         /** @type {ydn.db.text.QueryEntry} */ (query), result);
-    var source = this.ft_schema.getSource(
-        entry.getStoreName(), entry.getKeyPath());
-    entry.index = source;
-    goog.array.binaryInsert(this.results, entry,
-        ydn.db.text.Entry.cmp);
+    this.results.push(entry);
   }
   if (this.lap_ >= 3) {
     return false; // no more lookup
@@ -162,7 +158,7 @@ ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
 
 
 /**
- * Collect result with consolidate ranking.
+ * Collect non-redundant result with consolidate ranking.
  * @return {Array}
  */
 ydn.db.text.ResultSet.prototype.collect = function() {

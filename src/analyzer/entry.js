@@ -30,13 +30,12 @@ goog.require('ydn.db.utils');
  * An object that associates a value and a numerical score
  * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
- * @param {number=} opt_position source key path.
  * @param {number=} opt_score score.
  * @constructor
  * @struct
  * @implements {ydn.db.schema.fulltext.Entry}
  */
-ydn.db.text.Entry = function(keyword, value, opt_position, opt_score) {
+ydn.db.text.Entry = function(keyword, value, opt_score) {
   /**
    * @final
    * @type {string}
@@ -50,23 +49,10 @@ ydn.db.text.Entry = function(keyword, value, opt_position, opt_score) {
    */
   this.value = value;
   /**
-   * Location of the keyword in the document or query string.
-   * @final
-   * @type {number}
-   */
-  this.position = goog.isDef(opt_position) ? opt_position : NaN;
-  /**
    * @type {number}
    * @protected
    */
   this.score = goog.isDefAndNotNull(opt_score) ? opt_score : NaN;
-  /**
-   * This is computed lazily.
-   * @see #getId
-   * @type {IDBKey|undefined}
-   * @private
-   */
-  this.id_ = undefined;
 };
 
 
@@ -111,16 +97,6 @@ ydn.db.text.Entry.cmp = function(a, b) {
 
 
 /**
- * @protected
- * @return {!Array}
- */
-ydn.db.text.Entry.prototype.getSignature = function() {
-  var p = this.position || 0;
-  return [this.value, p];
-};
-
-
-/**
  * @final
  * @type {boolean}
  */
@@ -131,18 +107,9 @@ ydn.db.text.Entry.isArrayKeyPathSupported = goog.userAgent.product.CHROME &&
 /**
  * Uniquely identify this entry.
  * @return {IDBKey} Entry identifier.
- * @final
  */
 ydn.db.text.Entry.prototype.getId = function() {
-  if (!goog.isDefAndNotNull(this.id_)) {
-    var sig = this.getSignature();
-    if (ydn.db.text.Entry.isArrayKeyPathSupported) {
-      this.id_ = sig;
-    } else {
-      this.id_ = ydn.db.utils.encodeKey(sig);
-    }
-  }
-  return this.id_;
+  return this.value;
 };
 
 
