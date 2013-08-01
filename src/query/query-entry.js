@@ -25,7 +25,7 @@ goog.require('ydn.db.text.Entry');
 
 
 /**
- * Index entry for scoring keyword.
+ * Entry for querying.
  * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
  * @param {number} position source key path.

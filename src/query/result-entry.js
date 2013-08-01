@@ -25,7 +25,7 @@ goog.require('ydn.db.text.IndexEntry');
 
 
 /**
- * Index entry for scoring keyword.
+ * Entry restored from the database.
  * @param {ydn.db.text.QueryEntry} query query entry belong to this result.
  * @param {Object} json entry JSON read from the database.
  * @constructor
@@ -33,6 +33,8 @@ goog.require('ydn.db.text.IndexEntry');
  * @struct
  */
 ydn.db.text.ResultEntry = function(query, json) {
+  // the primary key 'id' is composite key having store name, key path, key
+  // and value. @see ydn.db.text.IndexEntry#getId().
   var id = json['id'];
   if (goog.isString(id)) {
     id = ydn.db.utils.decodeKey(id);

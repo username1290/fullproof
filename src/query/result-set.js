@@ -101,29 +101,6 @@ ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
 
 
 /**
- * Count number of results.
- * @param {boolean=} opt_only_satisfactory count only result of score larger
- * than or equal to threadhold value.
- * @return {number} number of results.
- */
-ydn.db.text.ResultSet.prototype.count = function(opt_only_satisfactory) {
-  if (opt_only_satisfactory && !isNaN(this.threshold)) {
-    var cnt = 0;
-    for (var i = 0; i < this.results.length; i++) {
-      if (this.results[i].getScore() >= this.threshold) {
-        cnt++;
-      } else {
-        break;
-      }
-    }
-    return cnt;
-  } else {
-    return this.results.length;
-  }
-};
-
-
-/**
  * Get list of store name involved in this catalog.
  * @return {!Array.<string>}
  */
@@ -144,9 +121,8 @@ ydn.db.text.ResultSet.prototype.getStoreList = function() {
  */
 ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
-    var result = results[i];
     var entry = new ydn.db.text.ResultEntry(
-        /** @type {ydn.db.text.QueryEntry} */ (query), result);
+        /** @type {ydn.db.text.QueryEntry} */ (query), results[i]);
     this.results.push(entry);
   }
   if (this.lap_ >= 3) {
@@ -159,7 +135,7 @@ ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
 
 /**
  * Collect non-redundant result with consolidate ranking.
- * @return {Array}
+ * @return {Array.<ydn.db.text.RankEntry>}
  */
 ydn.db.text.ResultSet.prototype.collect = function() {
   var arr = [];

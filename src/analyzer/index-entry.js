@@ -25,7 +25,7 @@ goog.require('ydn.db.text.Entry');
 
 
 /**
- * Index entry for scoring keyword.
+ * Index entry for scoring keyword and saving to database.
  * @param {Array} id inverted index schema.
  * @param {string} keyword normalized value of original word.
  * @param {Array.<number>=} opt_positions score.
