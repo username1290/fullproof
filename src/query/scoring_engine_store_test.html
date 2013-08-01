@@ -65,7 +65,7 @@
                 function () {
                     assertObjectEquals('article t1 inserted as it is', data[0], read_data);
                     assertEquals('has one index value', 1, keywords.length);
-                    assertEquals('index value', 'first', keywords[0].value);
+                    assertEquals('index value', 'line', keywords[0].value);
                     reachedFinalContinuation = true;
                     ydn.db.deleteDatabase(db.getName(), db.getType());
                     db.close();
@@ -77,9 +77,14 @@
         db.get('corpus', data[0].id).addBoth(function(x) {
             read_data = x;
         });
-        db.values('corpus-index', 'value', ydn.db.KeyRange.only('first')).addBoth(function(x) {
-            keywords = x;
+        /*
+        db.values('corpus-index').addBoth(function(x) {
             console.log(x);
+        });
+        */
+        db.values('corpus-index', 'value', ydn.db.KeyRange.only('line')).addBoth(function(x) {
+            keywords = x;
+            // console.log(x);
             done = true;
         });
     };

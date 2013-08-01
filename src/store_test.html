@@ -84,7 +84,7 @@
             db.get('article', 't1').addBoth(function(x) {
                 read_data = x;
             });
-            db.keys('test', 'keyword', ydn.db.KeyRange.only('t1')).addBoth(function(x) {
+            db.keys('test', 'value', ydn.db.KeyRange.only('t1')).addBoth(function(x) {
                 keywords = x;
                 console.log(x);
                 done = true;
