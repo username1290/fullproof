@@ -28,17 +28,13 @@ goog.require('ydn.db.schema.fulltext.Entry');
  * An object that associates a value and a numerical score
  * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
- * @param {number} position source key path.
- * @param {string=} opt_store_name source store name.
- * @param {string=} opt_key_path source key path.
- * @param {IDBKey=} opt_p_key source primary key.
+ * @param {number=} opt_position source key path.
  * @param {number=} opt_score score.
  * @constructor
  * @struct
  * @implements {ydn.db.schema.fulltext.Entry}
  */
-ydn.db.text.Entry = function(keyword, value, position,
-    opt_store_name, opt_key_path, opt_p_key, opt_score) {
+ydn.db.text.Entry = function(keyword, value, opt_position, opt_score) {
   /**
    * @final
    * @type {string}
@@ -52,29 +48,11 @@ ydn.db.text.Entry = function(keyword, value, position,
    */
   this.value = value;
   /**
-   * @final
-   * @type {string|undefined}
-   * @protected
-   */
-  this.store_name = opt_store_name;
-  /**
    * Location of the keyword in the document or query string.
    * @final
    * @type {number}
    */
-  this.position = position;
-  /**
-   * @final
-   * @type {string|undefined}
-   * @protected
-   */
-  this.key_path = opt_store_name;
-  /**
-   * @final
-   * @type {IDBKey|undefined}
-   * @protected
-   */
-  this.primary_key = opt_p_key;
+  this.position = goog.isDef(opt_position) ? opt_position : NaN;
   /**
    * @type {number}
    * @protected
@@ -115,40 +93,6 @@ ydn.db.text.Entry.prototype.getScore = function() {
 
 
 /**
- * @return {string} source store name.
- */
-ydn.db.text.Entry.prototype.getStoreName = function() {
-  return /** @type {string} */ (this.store_name);
-};
-
-
-/**
- * @return {IDBKey} source primary key.
- */
-ydn.db.text.Entry.prototype.getPrimaryKey = function() {
-  return /** @type {IDBKey} */ (this.primary_key);
-};
-
-
-/**
- * @return {!Object} JSON to stored into the database.
- */
-ydn.db.text.Entry.prototype.toJson = function() {
-  return {
-    'keyword': this.keyword,
-    'value': this.value,
-    'score': this.getScore(),
-    'source': {
-      'storeName': this.store_name,
-      'primaryKey': this.primary_key,
-      'keyPath': this.key_path,
-      'position': this.position
-    }
-  };
-};
-
-
-/**
  * Compare by score, then by id.
  * Note: this result 0 only if the same entry is compared.
  * @param {ydn.db.text.Entry} a entry a.
@@ -165,15 +109,23 @@ ydn.db.text.Entry.cmp = function(a, b) {
 
 
 /**
+ * @protected
+ * @return {string}
+ */
+ydn.db.text.Entry.prototype.getSignature = function() {
+  var p = this.position || 0;
+  return '' + p + this.value;
+};
+
+
+/**
  * Uniquely identify this entry.
  * @return {number} Entry identifier.
+ * @final
  */
 ydn.db.text.Entry.prototype.getId = function() {
   if (isNaN(this.id_)) {
-    var st = this.store_name || '';
-    var kp = this.key_path || '';
-    var p = this.position || 0;
-    this.id_ = goog.string.hashCode(st + kp + p + this.keyword);
+    this.id_ = goog.string.hashCode(this.getSignature());
   }
   return this.id_;
 };
@@ -188,14 +140,4 @@ if (goog.DEBUG) {
   };
 }
 
-
-/**
- * @param {Object} json
- * @return {!ydn.db.text.Entry}
- */
-ydn.db.text.Entry.fromJson = function(json) {
-  return new ydn.db.text.Entry(json['keyword'], json['value'],
-      json['position'], json['storeName'], json['keyPath'], json['primaryKey'],
-      json['score']);
-};
 

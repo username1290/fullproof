@@ -26,28 +26,45 @@ goog.require('ydn.db.text.Entry');
 
 /**
  * Index entry for scoring keyword.
+ * @param {string?} store_name inverted index schema.
+ * @param {string?} key_path inverted index schema.
+ * @param {IDBKey?} key source primary key.
  * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
- * @param {number} position source key path.
- * @param {string=} opt_store_name source store name.
- * @param {string=} opt_key_path source key path.
- * @param {IDBKey=} opt_p_key source primary key.
+ * @param {Array.<number>=} opt_positions score.
  * @param {number=} opt_score score.
  * @constructor
  * @extends {ydn.db.text.Entry}
  * @struct
  */
-ydn.db.text.IndexEntry = function(keyword, value, position, opt_store_name,
-                                  opt_key_path, opt_p_key, opt_score) {
-  goog.base(this, keyword, value, position, opt_store_name,
-      opt_key_path, opt_p_key, opt_score);
+ydn.db.text.IndexEntry = function(store_name, key_path, key, keyword, value,
+                                  opt_positions, opt_score) {
+  goog.base(this, keyword, value, opt_score);
+  /**
+   * @final
+   * @type {string?}
+   * @protected
+   */
+  this.store_name = store_name;
+  /**
+   * @final
+   * @type {string?}
+   * @protected
+   */
+  this.key_path = key_path;
+  /**
+   * @final
+   * @type {IDBKey?}
+   * @protected
+   */
+  this.primary_key = key;
   /**
    * Word count that this keyword encounter in the document.
    * @final
-   * @private
+   * @protected
    * @type {Array.<number>}
    */
-  this.encounter_count_ = [];
+  this.positions = opt_positions || [];
 };
 goog.inherits(ydn.db.text.IndexEntry, ydn.db.text.Entry);
 
@@ -68,7 +85,7 @@ ydn.db.text.IndexEntry.prototype.getScore = function() {
  * @param {number} count current word count.
  */
 ydn.db.text.IndexEntry.prototype.encounter = function(count) {
-  this.encounter_count_.push(count);
+  this.positions.push(count);
 };
 
 
@@ -78,24 +95,56 @@ ydn.db.text.IndexEntry.prototype.encounter = function(count) {
  */
 ydn.db.text.IndexEntry.prototype.compute = function() {
   var occboost = 0;
-  for (var i = 0; i < this.encounter_count_.length; ++i) {
-    occboost += (3.1415 - Math.log(1 + this.encounter_count_[i])) / 10;
+  for (var i = 0; i < this.positions.length; ++i) {
+    occboost += (3.1415 - Math.log(1 + this.positions[i])) / 10;
   }
-  var countboost = Math.abs(Math.log(1 + this.encounter_count_.length)) / 10;
+  var countboost = Math.abs(Math.log(1 + this.positions.length)) / 10;
   return 1 + occboost * 1.5 + countboost * 3;
 };
 
 
 /**
- *
- * @param {ydn.db.text.IndexEntry} a
- * @param {ydn.db.text.IndexEntry} b
- * @return {ydn.db.text.IndexEntry}
+ * @return {!Object} JSON to stored into the database.
  */
-ydn.db.text.IndexEntry.mergeFn = function(a,b) {
-  return new ydn.db.text.IndexEntry(a.keyword, a.value, a.position,
-      a.store_name, a.key_path, a.primary_key, a.getScore() + b.getScore());
+ydn.db.text.IndexEntry.prototype.toJson = function() {
+  return {
+    'keyword': this.keyword,
+    'value': this.value,
+    'score': this.getScore(),
+    'source': {
+      'storeName': this.store_name,
+      'primaryKey': this.primary_key,
+      'keyPath': this.key_path,
+      'positions': this.positions // .slice() // no need defensive
+    }
+  };
 };
 
+
+/**
+ * @override
+ */
+ydn.db.text.IndexEntry.prototype.getSignature = function() {
+  var st = this.store_name || '';
+  var kp = this.key_path || '';
+  var p = this.position || 0;
+  return st + kp + p + this.value;
+};
+
+
+/**
+ * @return {string} source store name.
+ */
+ydn.db.text.IndexEntry.prototype.getStoreName = function() {
+  return /** @type {string} */ (this.store_name);
+};
+
+
+/**
+ * @return {IDBKey} source primary key.
+ */
+ydn.db.text.IndexEntry.prototype.getPrimaryKey = function() {
+  return /** @type {IDBKey} */ (this.primary_key);
+};
 
 

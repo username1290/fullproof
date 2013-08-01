@@ -20,7 +20,7 @@
 
 
 goog.provide('ydn.db.text.ResultEntry');
-goog.require('ydn.db.text.Entry');
+goog.require('ydn.db.text.IndexEntry');
 
 
 
@@ -30,14 +30,14 @@ goog.require('ydn.db.text.Entry');
  * @param {ydn.db.text.QueryEntry} query query entry belong to this result.
  * @param {Object} json entry JSON read from the database.
  * @constructor
- * @extends {ydn.db.text.Entry}
+ * @extends {ydn.db.text.IndexEntry}
  * @struct
  */
 ydn.db.text.ResultEntry = function(index, query, json) {
   var es = json['source'];
-  goog.base(this, json['keyword'], json['value'], es['position'],
-      es['storeName'], es['keyPath'], es['primaryKey'],
-      json['score']);
+  goog.base(this, es['storeName'], es['keyPath'], es['primaryKey'],
+      json['keyword'], json['value'],
+      json['positions'], json['score']);
   /**
    * @type {ydn.db.schema.fulltext.InvIndex}
    * @protected
@@ -49,7 +49,7 @@ ydn.db.text.ResultEntry = function(index, query, json) {
    */
   this.query = query;
 };
-goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.Entry);
+goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.IndexEntry);
 
 
 /**
@@ -64,6 +64,7 @@ ydn.db.text.ResultEntry.prototype.getScore = function() {
       'index_weight');
   return this.score * query_weight * index_weight;
 };
+
 
 
 

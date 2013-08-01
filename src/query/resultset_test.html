@@ -36,14 +36,14 @@
             var results = [];
             for (var i = 0; i < 4; i++) {
               results[i] = {
-                  keyword: 'first',
-                  value: 'first',
+                  keyword: 'first' + i,
+                  value: 'first' + i,
                   score: 1,
                   source: {
                       storeName: 'article',
                       keyPath: 'title',
                       primaryKey: '1',
-                      position: i
+                      positions: [2]
                   }
               }
             }
@@ -55,8 +55,8 @@
             var results = [];
             for (var i = 0; i < 4; i++) {
                 results[i] = {
-                    keyword: 'first',
-                    value: 'first',
+                    keyword: 'first' + i,
+                    value: 'first' + i,
                     score: 1,
                     source: {
                         storeName: 'article',
@@ -70,8 +70,8 @@
             results = [];
             for (var i = 0; i < 3; i++) {
                 results[i] = {
-                    key: 'second',
-                    value: 'second',
+                    key: 'second' + i,
+                    value: 'second' + i,
                     score: 1,
                     source: {
                         storeName: 'article',
