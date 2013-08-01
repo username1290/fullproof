@@ -21,6 +21,7 @@
 
 goog.provide('ydn.db.text.Entry');
 goog.require('ydn.db.schema.fulltext.Entry');
+goog.require('ydn.db.utils');
 
 
 
@@ -61,10 +62,10 @@ ydn.db.text.Entry = function(keyword, value, opt_position, opt_score) {
   /**
    * This is computed lazily.
    * @see #getId
-   * @type {number}
+   * @type {string|undefined}
    * @private
    */
-  this.id_ = NaN;
+  this.id_ = undefined;
 };
 
 
@@ -110,22 +111,22 @@ ydn.db.text.Entry.cmp = function(a, b) {
 
 /**
  * @protected
- * @return {string}
+ * @return {Array}
  */
 ydn.db.text.Entry.prototype.getSignature = function() {
   var p = this.position || 0;
-  return '' + p + this.value;
+  return [this.value, p];
 };
 
 
 /**
  * Uniquely identify this entry.
- * @return {number} Entry identifier.
+ * @return {string} Entry identifier.
  * @final
  */
 ydn.db.text.Entry.prototype.getId = function() {
-  if (isNaN(this.id_)) {
-    this.id_ = goog.string.hashCode(this.getSignature());
+  if (!goog.isDefAndNotNull(this.id_)) {
+    this.id_ = ydn.db.utils.encodeKey(this.getSignature());
   }
   return this.id_;
 };

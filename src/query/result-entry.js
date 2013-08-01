@@ -34,18 +34,21 @@ goog.require('ydn.db.text.IndexEntry');
  * @struct
  */
 ydn.db.text.ResultEntry = function(index, query, json) {
-  var es = json['source'];
-  goog.base(this, es['storeName'], es['keyPath'], es['primaryKey'],
-      json['keyword'], json['value'],
+  var id = ydn.db.utils.decodeKey(json['id']);
+  goog.asserts.assertArray(id, 'invalid inverted key key ' + json['id']);
+  var store_name = id[0];
+  var primary_key = id[1];
+  var key_path = id[2];
+  var value = id[3];
+  goog.base(this, store_name, key_path, primary_key,
+      json['keyword'], value,
       json['positions'], json['score']);
   /**
    * @type {ydn.db.schema.fulltext.InvIndex}
-   * @protected
    */
   this.index = index;
   /**
    * @type {ydn.db.text.QueryEntry}
-   * @protected
    */
   this.query = query;
 };

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Store test</title>
-    <script src="../../closure-library/closure/goog/base.js"></script>
-    <script src="../../ydn-base/js/deps.js"></script>
-    <script src="../../ydn-db/js/deps.js"></script>
-    <script type="text/javascript" src="../src/deps.js"></script>
-    <script type="text/javascript" src="normalizer/unicode/normalizer_lowercase.js"></script>
-    <script type="text/javascript" src="normalizer/unicode/normalizer_lowercase_nomark.js"></script>
-    <script type="text/javascript" src="normalizer/unicode/categ_letters_numbers.js"></script>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script src="../../../ydn-base/js/deps.js"></script>
+    <script src="../../../ydn-db/js/deps.js"></script>
+    <script type="text/javascript" src="../deps.js"></script>
+    <script type="text/javascript" src="../normalizer/unicode/normalizer_lowercase.js"></script>
+    <script type="text/javascript" src="../normalizer/unicode/normalizer_lowercase_nomark.js"></script>
+    <script type="text/javascript" src="../normalizer/unicode/categ_letters_numbers.js"></script>
     <script type="text/javascript">
         goog.require('ydn.db.text.ResultSet');
         goog.require('ydn.debug');
@@ -18,9 +18,10 @@
         goog.require('goog.testing.ContinuationTestCase');
         goog.require('goog.testing.jsunit');
     </script>
+    <script src="../../../ydn-db/js/config/conn.js"></script>
     <script type="text/javascript">
-        ydn.db.base.USE_HOOK = true;
-        // ydn.debug.log('ydn.db', 'finest');
+        ydn.db.crud.Storage.text.DEBUG = true;
+        ydn.debug.log('ydn.db', 'finest');
     </script>
 </head>
 <body>
@@ -56,7 +57,7 @@
                 title: 't1',
                 body: 'This is a test for data injection. Only one entry injected'
             };
-            var db = new ydn.db.Storage('test_inject-1', db_schema);
+            var db = new ydn.db.Storage('test_inject-2', db_schema);
             var done;
             var read_data, schema, keywords;
             waitForCondition(

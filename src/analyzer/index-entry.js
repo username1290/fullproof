@@ -111,12 +111,8 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
     'keyword': this.keyword,
     'value': this.value,
     'score': this.getScore(),
-    'source': {
-      'storeName': this.store_name,
-      'primaryKey': this.primary_key,
-      'keyPath': this.key_path,
-      'positions': this.positions // .slice() // no need defensive
-    }
+    'id': this.getId(),
+    'positions': this.positions // .slice() // no need defensive
   };
 };
 
@@ -126,9 +122,9 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
  */
 ydn.db.text.IndexEntry.prototype.getSignature = function() {
   var st = this.store_name || '';
+  var kr = this.primary_key || '';
   var kp = this.key_path || '';
-  var p = this.position || 0;
-  return st + kp + p + this.value;
+  return [st, kr, kp, this.value];
 };
 
 
@@ -137,6 +133,14 @@ ydn.db.text.IndexEntry.prototype.getSignature = function() {
  */
 ydn.db.text.IndexEntry.prototype.getStoreName = function() {
   return /** @type {string} */ (this.store_name);
+};
+
+
+/**
+ * @return {string} source store name.
+ */
+ydn.db.text.IndexEntry.prototype.getKeyPath = function() {
+  return /** @type {string} */ (this.key_path);
 };
 
 

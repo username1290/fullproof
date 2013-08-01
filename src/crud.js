@@ -26,6 +26,11 @@ goog.require('ydn.db.crud.Storage');
 
 
 /**
+ * @define {boolean} debug flag, always false.
+ */
+ydn.db.crud.Storage.text.DEBUG = false;
+
+/**
  * Add full text indexer
  * @param {ydn.db.schema.Store} store store object.
  * @param {ydn.db.schema.fulltext.Catalog} ft_schema full text schema.
@@ -40,21 +45,32 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
    * @param {Arguments} args
    */
   var indexer = function(rq, args) {
-    if (rq.getMethod() == ydn.db.Request.Method.PUT) {
+    var mth = rq.getMethod();
+    if (mth == ydn.db.Request.Method.PUT) {
       var doc = /** @type {!Object} */ (args[1]);
       var store_name = store.getName();
+      if (ydn.db.crud.Storage.text.DEBUG) {
+        window.console.log(mth + ' indexing ' + store_name +
+            ydn.json.toShortString(doc));
+      }
       rq.addCallback(function(key) {
         var p_key = /** @type {IDBKey} */ (key);
-        var scores = ft_schema.engine.analyze(store_name, p_key, doc);
-        var json = scores.map(function(x) {
+        var entries = ft_schema.engine.analyze(store_name, p_key, doc);
+        var json = entries.map(function(x) {
           return x.toJson();
         });
-        // console.log(json);
+        if (ydn.db.crud.Storage.text.DEBUG) {
+          window.console.log(json);
+        }
         me.getCoreOperator().dumpInternal(ft_schema.getName(), json);
       }, this);
-    } else if (rq.getMethod() == ydn.db.Request.Method.PUTS) {
+    } else if (mth == ydn.db.Request.Method.PUTS) {
       var arr = /** @type {Array} */ (args[1]);
       var store_name = store.getName();
+      if (ydn.db.crud.Storage.text.DEBUG) {
+        window.console.log(mth + ' indexing ' + store_name +
+            arr.length + ' objects');
+      }
       rq.addCallback(function(keys) {
         for (var i = 0; i < keys.length; i++) {
           var doc = /** @type {!Object} */ (arr[i]);
@@ -63,7 +79,9 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
           var json = scores.map(function(x) {
             return x.toJson();
           });
-          // window.console.log(json);
+          if (ydn.db.crud.Storage.text.DEBUG) {
+            window.console.log(json);
+          }
           me.getCoreOperator().dumpInternal(ft_schema.getName(), json);
         }
       }, this);

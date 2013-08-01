@@ -145,10 +145,11 @@ ydn.db.text.ResultSet.prototype.getStoreList = function() {
 ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
     var result = results[i];
-    var sc = result['source'];
-    var source = this.ft_schema.getSource(sc['storeName'], sc['keyPath']);
-    var entry = new ydn.db.text.ResultEntry(source,
+    var entry = new ydn.db.text.ResultEntry(null,
         /** @type {ydn.db.text.QueryEntry} */ (query), result);
+    var source = this.ft_schema.getSource(
+        entry.getStoreName(), entry.getKeyPath());
+    entry.index = source;
     goog.array.binaryInsert(this.results, entry,
         ydn.db.text.Entry.cmp);
   }

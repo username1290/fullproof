@@ -2,7 +2,7 @@
 goog.addDependency("../../../ydn-db-text/src/alltests.js", [], []);
 goog.addDependency("../../../ydn-db-text/src/crud.js", ['ydn.db.crud.Storage.text'], ['fullproof.ScoringEngine', 'ydn.db.crud.Storage']);
 goog.addDependency("../../../ydn-db-text/src/analyzer/analyzer.js", ['fullproof.Analyzer'], ['fullproof.normalizer.Normalizer', 'fullproof.normalizer.english', 'goog.array', 'net.kornr.unicode', 'ydn.db.schema.fulltext.Catalog', 'ydn.db.text.IndexEntry', 'ydn.db.text.ResultSet']);
-goog.addDependency("../../../ydn-db-text/src/analyzer/entry.js", ['ydn.db.text.Entry'], ['ydn.db.schema.fulltext.Entry']);
+goog.addDependency("../../../ydn-db-text/src/analyzer/entry.js", ['ydn.db.text.Entry'], ['ydn.db.schema.fulltext.Entry', 'ydn.db.utils']);
 goog.addDependency("../../../ydn-db-text/src/analyzer/index-entry.js", ['ydn.db.text.IndexEntry'], ['ydn.db.text.Entry']);
 goog.addDependency("../../../ydn-db-text/src/config/text.js", [], ['ydn.db.crud.Storage.text']);
 goog.addDependency("../../../ydn-db-text/src/normalizer/normalizer.js", ['fullproof.normalizer.Normalizer'], []);
