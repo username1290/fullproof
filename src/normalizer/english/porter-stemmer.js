@@ -1,8 +1,7 @@
 /**
  * Porter stemmer adapted from http://code.google.com/p/yeti-witch/source/browse/trunk/lib/porter-stemmer.js
  * Original license header below, declared as Apache License V2 on the project site
- */
-/**
+ *
  * 18 May 2008
  * Stemming is the process for reducing inflected (or sometimes derived) words to their stem, base or root
  * form. Porter stemming is designed for the English language.

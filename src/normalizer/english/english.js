@@ -8,17 +8,17 @@
 
 goog.provide('fullproof.normalizer.english');
 goog.require('fullproof.normalizer.StopWordRemover');
-goog.require('fullproof.normalizer.english.Metaphone');
 goog.require('fullproof.normalizer.english.PorterStemmer');
 goog.require('fullproof.normalizer.english.stopwords');
+goog.require('natural.phonetics.Metaphone');
 
 
 /**
  * @final
- * @type {!fullproof.normalizer.english.Metaphone}
+ * @type {!natural.phonetics.Metaphone}
  */
 fullproof.normalizer.english.metaphone =
-    new fullproof.normalizer.english.Metaphone(32);
+    new natural.phonetics.Metaphone(32);
 
 
 /**
@@ -43,7 +43,7 @@ fullproof.normalizer.english.stop = new fullproof.normalizer.StopWordRemover(
  * normalizers.
  */
 fullproof.normalizer.english.getNormalizers = function(opt_names) {
-  var names = opt_names || ['metaphone', 'stemmer', 'stop'];
+  var names = opt_names || ['stop', 'stemmer', 'metaphone'];
   var normalizers = [];
   for (var i = 0; i < names.length; i++) {
     if (names[i] == 'metaphone') {

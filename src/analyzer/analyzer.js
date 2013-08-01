@@ -39,7 +39,7 @@ fullproof.Analyzer = function(schema) {
    * @protected
    * @type {!Array.<!fullproof.normalizer.Normalizer>}
    */
-  this.normalizers = this.getNormalizers(schema);
+  this.normalizers = fullproof.Analyzer.getNormalizers(schema);
 };
 
 
@@ -47,7 +47,7 @@ fullproof.Analyzer = function(schema) {
  * @param {ydn.db.schema.fulltext.Catalog} schema
  * @return {!Array.<!fullproof.normalizer.Normalizer>}
  */
-fullproof.Analyzer.prototype.getNormalizers = function(schema) {
+fullproof.Analyzer.getNormalizers = function(schema) {
   if (schema.lang == 'en') {
     return fullproof.normalizer.english.getNormalizers(schema.normalizers);
   } else {
@@ -64,6 +64,7 @@ fullproof.Analyzer.prototype.getNormalizers = function(schema) {
 fullproof.Analyzer.prototype.normalize = function(word) {
   for (var i = 0; i < this.normalizers.length; i++) {
     var w = this.normalizers[i].normalize(word);
+    // console.log(word, w);
     if (w) {
       word = w;
     } else {
@@ -147,12 +148,15 @@ fullproof.Analyzer.prototype.scoreQuery = function(text) {
   var wordcount = 0;
   for (var i = 0; i < tokens.length; i++) {
     var word = nTokens[i];
-    var score = goog.array.find(scores, function(s) {
-      return s.getKeyword() == word;
-    });
-    if (!score) {
-      score = new ydn.db.text.QueryEntry(word, tokens[i], positions[i]);
-      scores.push(score);
+    // console.log(tokens[i], word);
+    if (goog.isDefAndNotNull(word)) {
+      var score = goog.array.find(scores, function(s) {
+        return s.getKeyword() == word;
+      });
+      if (!score) {
+        score = new ydn.db.text.QueryEntry(word, tokens[i], positions[i]);
+        scores.push(score);
+      }
     }
   }
 
@@ -185,15 +189,17 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
   var wordcount = 0;
   for (var i = 0; i < tokens.length; i++) {
     var word = nTokens[i];
-    var score = goog.array.find(scores, function(s) {
-      return s.getKeyword() == word;
-    });
-    if (!score) {
-      score = new ydn.db.text.IndexEntry(word, tokens[i], positions[i],
-          store_name, key_path, opt_key);
-      scores.push(score);
+    if (goog.isDefAndNotNull(word)) {
+      var score = goog.array.find(scores, function(s) {
+        return s.getKeyword() == word;
+      });
+      if (!score) {
+        score = new ydn.db.text.IndexEntry(word, tokens[i], positions[i],
+            store_name, key_path, opt_key);
+        scores.push(score);
+      }
+      score.encounter(++wordcount);
     }
-    score.encounter(++wordcount);
   }
 
   return scores;

@@ -39,6 +39,7 @@ ydn.db.text.QueryEntry = function(keyword, value, position) {
    * @type {ydn.db.text.ResultSet}
    */
   this.resultset = null;
+  this.score = 1;
 };
 goog.inherits(ydn.db.text.QueryEntry, ydn.db.schema.fulltext.Entry);
 

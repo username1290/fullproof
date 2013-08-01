@@ -6,8 +6,8 @@ goog.addDependency("../../../ydn-db-text/src/analyzer/index-entry.js", ['ydn.db.
 goog.addDependency("../../../ydn-db-text/src/config/text.js", [], ['ydn.db.crud.Storage.text']);
 goog.addDependency("../../../ydn-db-text/src/normalizer/normalizer.js", ['fullproof.normalizer.Normalizer'], []);
 goog.addDependency("../../../ydn-db-text/src/normalizer/stop-word-remover.js", ['fullproof.normalizer.StopWordRemover'], ['fullproof.normalizer.Normalizer']);
-goog.addDependency("../../../ydn-db-text/src/normalizer/english/english.js", ['fullproof.normalizer.english'], ['fullproof.normalizer.StopWordRemover', 'fullproof.normalizer.english.Metaphone', 'fullproof.normalizer.english.PorterStemmer', 'fullproof.normalizer.english.stopwords']);
-goog.addDependency("../../../ydn-db-text/src/normalizer/english/metaphone.js", ['fullproof.normalizer.english.Metaphone'], []);
+goog.addDependency("../../../ydn-db-text/src/normalizer/english/english.js", ['fullproof.normalizer.english'], ['fullproof.normalizer.StopWordRemover', 'natural.phonetics.Metaphone', 'fullproof.normalizer.english.PorterStemmer', 'fullproof.normalizer.english.stopwords']);
+goog.addDependency("../../../ydn-db-text/src/normalizer/english/metaphone.js", ['natural.phonetics.Metaphone'], []);
 goog.addDependency("../../../ydn-db-text/src/normalizer/english/porter-stemmer.js", ['fullproof.normalizer.english.PorterStemmer'], []);
 goog.addDependency("../../../ydn-db-text/src/normalizer/english/stopword-remover.js", ['fullproof.normalizer.english.stopwords'], []);
 goog.addDependency("../../../ydn-db-text/src/normalizer/french/simpleform.js", [], []);

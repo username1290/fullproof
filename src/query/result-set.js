@@ -93,12 +93,11 @@ ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
   }
   var index_name = ydn.db.text.ResultSet.Q_TYPES[this.i_type_];
   var store_name = this.ft_schema.getName();
-  for (var i = 0; i < this.ft_schema.count(); i++) {
-    var index_schema = this.ft_schema.index(i);
-    for (var j = 0; j < this.query_tokens.length; j++) {
-      var token = this.query_tokens[j];
-      var key = this.i_type_ == 0 || this.i_type_ == 3 ?
-          token.getValue() : token.getKeyword();
+  for (var j = 0; j < this.query_tokens.length; j++) {
+    var token = this.query_tokens[j];
+    var key = this.i_type_ == 0 || this.i_type_ == 3 ?
+        token.getValue() : token.getKeyword();
+    if (goog.isDefAndNotNull(key)) {
       var key_range = this.i_type_ >= 2 ? ydn.db.KeyRange.starts(key) :
           ydn.db.KeyRange.only(key);
       cb(store_name, index_name, key_range, this.query_tokens[j]);
@@ -158,6 +157,9 @@ ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
     var entry = new ydn.db.text.ResultEntry(source, query, result);
     goog.array.binaryInsert(this.results, entry,
         ydn.db.schema.fulltext.Entry.cmp);
+  }
+  if (this.i_type_ > ydn.db.text.ResultSet.Q_TYPES.length) {
+    return false;
   }
   return this.count(true) <= this.limit;
 };

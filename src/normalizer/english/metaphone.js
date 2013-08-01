@@ -24,7 +24,7 @@
  */
 
 
-goog.provide('fullproof.normalizer.english.Metaphone');
+goog.provide('natural.phonetics.Metaphone');
 
 
 
@@ -33,7 +33,7 @@ goog.provide('fullproof.normalizer.english.Metaphone');
  * @constructor
  * @implements {fullproof.normalizer.Normalizer}
  */
-fullproof.normalizer.english.Metaphone = function(maxLength) {
+natural.phonetics.Metaphone = function(maxLength) {
   this.maxLength = maxLength;
 };
 
@@ -41,7 +41,7 @@ fullproof.normalizer.english.Metaphone = function(maxLength) {
 /**
  * @inheritDoc
  */
-fullproof.normalizer.english.Metaphone.prototype.normalize = function(token) {
+natural.phonetics.Metaphone.prototype.normalize = function(token) {
   function dedup(token) {
     return token.replace(/([^c])\1/g, '$1');
   }
