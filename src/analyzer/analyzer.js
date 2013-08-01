@@ -126,10 +126,45 @@ fullproof.Analyzer.prototype.tokenize = function(text, callback) {
 
 
 /**
+ * Score a query.
+ * @param {string} text
+ * @return {Array.<ydn.db.text.QueryEntry>}
+ */
+fullproof.Analyzer.prototype.scoreQuery = function(text) {
+  var tokens = [];
+  var positions = [];
+  // Note: parse is always sync.
+  this.tokenize(text, function(start, len) {
+    var token = text.substr(start, len);
+    tokens.push(token);
+    positions.push(start);
+  });
+  var nTokens = [];
+  for (var i = 0; i < tokens.length; i++) {
+    nTokens[i] = this.normalize(tokens[i]);
+  }
+  var scores = [];
+  var wordcount = 0;
+  for (var i = 0; i < tokens.length; i++) {
+    var word = nTokens[i];
+    var score = goog.array.find(scores, function(s) {
+      return s.getKeyword() == word;
+    });
+    if (!score) {
+      score = new ydn.db.text.QueryEntry(word, tokens[i], positions[i]);
+      scores.push(score);
+    }
+  }
+
+  return scores;
+};
+
+
+/**
  * @param {string} text text to be prase and scored.
- * @param {ydn.db.schema.fulltext.InvIndex} source
+ * @param {ydn.db.schema.fulltext.InvIndex} source inverted index.
  * @param {IDBKey=} opt_key primary key.
- * @return {Array.<ydn.db.text.QueryEntry>} scores for each unique token.
+ * @return {Array.<ydn.db.text.IndexEntry>} scores for each unique token.
  */
 fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
   var tokens = [];

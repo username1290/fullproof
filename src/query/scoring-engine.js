@@ -43,10 +43,22 @@ fullproof.ScoringEngine = function(schema) {
 
 
 /**
- * @inheritDoc
+ * Free text query.
+ * @param {string} catalog_name
+ * @param {string} query
+ * @param {number=} opt_limit
+ * @param {number=} opt_threshold
+ * @return {ydn.db.text.ResultSet}
  */
-fullproof.ScoringEngine.prototype.score = function(text, source) {
-  return this.analyzer.score(text, source);
+fullproof.ScoringEngine.prototype.query = function(catalog_name, query,
+                                                   opt_limit, opt_threshold) {
+  var tokens = this.analyzer.scoreQuery(query);
+  if (tokens.length == 0) {
+    return null;
+  }
+  var limit = opt_limit || 10;
+  var threshold = opt_threshold || 1;
+  return new ydn.db.text.ResultSet(this.schema, tokens, limit, threshold);
 };
 
 
@@ -79,24 +91,6 @@ fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
  */
 fullproof.ScoringEngine.prototype.parse = function(query) {
   return this.analyzer.parse(query);
-};
-
-
-/**
- * @inheritDoc
- */
-fullproof.ScoringEngine.prototype.rank = function(req, result) {
-  var result_req = req.copy();
-  req.addProgback(function(x) {
-    var score = /** @type {ydn.db.text.QueryEntry} */ (x);
-    result_req.notify(result);
-  }, this);
-  req.addCallbacks(function() {
-    result_req.callback(result);
-  }, function(e) {
-    result_req.errback(result);
-  }, this);
-  return result_req;
 };
 
 

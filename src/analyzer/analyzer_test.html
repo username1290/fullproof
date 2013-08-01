@@ -18,17 +18,33 @@
 <body>
     <script type="text/javascript">
         goog.require('goog.testing.jsunit');
-        var test_standard_analyzer = function() {
-            var stda = new fullproof.Analyzer([net.kornr.unicode.lowercase]);
+        var catalog = ydn.db.schema.fulltext.Catalog.fromJson({
+            name: 'corpus-index',
+            lang: 'en',
+            indexes: [
+                {
+                    storeName: 'corpus',
+                    keyPath: 'text'
+                }]
+        });
+        var test_parse = function() {
+            var stda = new fullproof.Analyzer(catalog);
             assertArrayEquals('simple', ['this', 'is', 'a', 'test'],
                     stda.parse("this is a test"));
             assertArrayEquals('with extra spaces', ['this', 'is', 'a', 'test'],
                     stda.parse("this  is a  test"));
         };
-        var test_scoring_analyzer = function() {
-            var stda = new fullproof.Analyzer([net.kornr.unicode.lowercase_nomark]);
-            var words = stda.score("this is a test longer than the previous one, but not that long for a test though");
+        var test_scoring_query_one = function() {
+            var stda = new fullproof.Analyzer(catalog);
+            var words = stda.scoreQuery("dog");
             console.log(words);
+            assertEquals('length', 1, words.length);
+            assertEquals('key 0', 'dog', words[0].getKeyword());
+        };
+        var test_scoring_long = function() {
+            var stda = new fullproof.Analyzer(catalog);
+            var words = stda.score("this is a test longer than the previous one, but not that long for a test though");
+            // console.log(words);
             assertEquals('length', 15, words.length);
             assertEquals('key 0', 'this', words[0].getKeyword());
             assertEquals('key 1', 'is', words[1].getKeyword());

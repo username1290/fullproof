@@ -87,23 +87,14 @@ ydn.db.text.IndexEntry.prototype.compute = function() {
 
 
 /**
- * Token encounter in indexing string.
- * @param {number} count current word count.
- */
-ydn.db.text.IndexEntry.prototype.encounter = function(count) {
-  this.encounter_count_.push(count);
-};
-
-
-/**
  *
  * @param {ydn.db.text.IndexEntry} a
  * @param {ydn.db.text.IndexEntry} b
  * @return {ydn.db.text.IndexEntry}
  */
 ydn.db.text.IndexEntry.mergeFn = function(a,b) {
-  return new ydn.db.text.IndexEntry(a.key, a.value, a.position, a.store_name,
-      a.key_path, a.primary_key, a.raw_score_ + b.raw_score_);
+  return new ydn.db.text.IndexEntry(a.keyword, a.value, a.position,
+      a.store_name, a.key_path, a.primary_key, a.getScore() + b.getScore());
 };
 
 

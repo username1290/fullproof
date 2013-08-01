@@ -3,10 +3,10 @@
  */
 var Animals = function() {
   var db_schema = {
-    fullTextIndexes: [{
+    fullTextCatalogs: [{
       name: 'name',
       lang: 'en',
-      sources: [
+      indexes: [
         {
           storeName: 'animal',
           keyPath: 'binomial',
@@ -87,6 +87,9 @@ Animals.prototype.load = function(url) {
 };
 
 
+/**
+ * Run the app.
+ */
 Animals.prototype.run = function() {
   this.db.addEventListener('ready', function(e) {
     this.db.count('animal').then(function(cnt) {

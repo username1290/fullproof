@@ -92,9 +92,9 @@ ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
     return;
   }
   var index_name = ydn.db.text.ResultSet.Q_TYPES[this.i_type_];
+  var store_name = this.ft_schema.getName();
   for (var i = 0; i < this.ft_schema.count(); i++) {
     var index_schema = this.ft_schema.index(i);
-    var store_name = index_schema.getStoreName();
     for (var j = 0; j < this.query_tokens.length; j++) {
       var token = this.query_tokens[j];
       var key = this.i_type_ == 0 || this.i_type_ == 3 ?
@@ -128,6 +128,22 @@ ydn.db.text.ResultSet.prototype.count = function(opt_only_satisfactory) {
   } else {
     return this.results.length;
   }
+};
+
+
+/**
+ * Get list of store name involved in this catalog.
+ * @return {!Array.<string>}
+ */
+ydn.db.text.ResultSet.prototype.getStoreList = function() {
+  var store_names = [this.ft_schema.getName()];
+  for (var i = 0; i < this.ft_schema.count(); i++) {
+    var source_name = this.ft_schema.index(i).getStoreName();
+    if (store_names.indexOf(source_name) == -1) {
+      store_names.push(source_name);
+    }
+  }
+  return store_names;
 };
 
 

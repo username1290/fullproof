@@ -29,18 +29,12 @@ goog.require('ydn.db.schema.fulltext.Entry');
  * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
  * @param {number} position source key path.
- * @param {string=} opt_store_name source store name.
- * @param {string=} opt_key_path source key path.
- * @param {IDBKey=} opt_p_key source primary key.
- * @param {number=} opt_score score.
  * @constructor
  * @extends {ydn.db.schema.fulltext.Entry}
  * @struct
  */
-ydn.db.text.QueryEntry = function(keyword, value, position, opt_store_name,
-                                  opt_key_path, opt_p_key, opt_score) {
-  goog.base(this, keyword, value, position, opt_store_name,
-      opt_key_path, opt_p_key, opt_score);
+ydn.db.text.QueryEntry = function(keyword, value, position) {
+  goog.base(this, keyword, value, position);
   /**
    * @type {ydn.db.text.ResultSet}
    */

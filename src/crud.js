@@ -79,18 +79,16 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
  * @param {string} query text query.
  * @param {number=} opt_limit Maximum number of satisfactory results.
  * @param {number=} opt_threshold Threshold score of a result to consider as
+ * success.
  * @return {!ydn.db.Request} search request.
  */
 ydn.db.crud.Storage.prototype.search = function(name, query, opt_limit,
                                                 opt_threshold) {
+
   var ft_schema = this.schema.getFullTextSchema(name);
-  var tokens = ft_schema.engine.analyze(query);
-  if (tokens.length == 0) {
+  var result = ft_schema.engine.query(name, query, opt_limit, opt_threshold);
+  if (!result) {
     return ydn.db.Request.succeed(ydn.db.Request.Method.SEARCH, null);
   }
-  var limit = opt_limit || 10;
-  var threshold = opt_threshold || 1;
-  var result = new ydn.db.text.ResultSet(ft_schema, tokens, limit, threshold);
-  var search_req = this.getCoreOperator().search(ft_schema, result);
-  return search_req;
+  return this.getCoreOperator().search(result);
 };
