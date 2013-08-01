@@ -56,8 +56,8 @@ goog.inherits(ydn.db.text.ResultEntry, ydn.db.schema.fulltext.Entry);
  * @return {number} element score.
  */
 ydn.db.text.ResultEntry.prototype.getScore = function() {
-  var query_weight = this.query.getWeight();
-  var index_weight = this.index.getWeight();
+  var query_weight = this.query ? this.query.getWeight() : 1;
+  var index_weight = this.index ? this.index.getWeight() : 1;
   goog.asserts.assert(goog.isNumber(query_weight) && !isNaN(query_weight),
       'query_weight');
   goog.asserts.assert(goog.isNumber(index_weight) && !isNaN(index_weight),

@@ -30,10 +30,10 @@
             var words = stda.score("this is a test longer than the previous one, but not that long for a test though");
             console.log(words);
             assertEquals('length', 15, words.length);
-            assertEquals('key 0', 'this', words[0].key);
-            assertEquals('key 1', 'is', words[1].key);
-            assertEquals('key 2', 'a', words[2].key);
-            assertEquals('key 3', 'test', words[3].key);
+            assertEquals('key 0', 'this', words[0].getKeyword());
+            assertEquals('key 1', 'is', words[1].getKeyword());
+            assertEquals('key 2', 'a', words[2].getKeyword());
+            assertEquals('key 3', 'test', words[3].getKeyword());
             assertTrue('score 0', words[0].getScore() > words[1].getScore());
             assertTrue('score 2', words[2].getScore() > words[1].getScore());
         };

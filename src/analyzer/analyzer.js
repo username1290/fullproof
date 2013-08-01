@@ -18,12 +18,13 @@
 
 
 goog.provide('fullproof.Analyzer');
-goog.require('ydn.db.text.ResultSet');
 goog.require('fullproof.normalizer.Normalizer');
 goog.require('fullproof.normalizer.english');
 goog.require('goog.array');
 goog.require('net.kornr.unicode');
 goog.require('ydn.db.schema.fulltext.Catalog');
+goog.require('ydn.db.text.IndexEntry');
+goog.require('ydn.db.text.ResultSet');
 
 
 
@@ -153,7 +154,7 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
       return s.getKeyword() == word;
     });
     if (!score) {
-      score = new ydn.db.text.QueryEntry(word, tokens[i], positions[i],
+      score = new ydn.db.text.IndexEntry(word, tokens[i], positions[i],
           store_name, key_path, opt_key);
       scores.push(score);
     }

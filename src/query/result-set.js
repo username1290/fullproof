@@ -136,9 +136,10 @@ ydn.db.text.ResultSet.prototype.count = function(opt_only_satisfactory) {
  */
 ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
-    var sc = results['source'];
+    var result = results[i];
+    var sc = result['source'];
     var source = this.ft_schema.getSource(sc['storeName'], sc['keyPath']);
-    var entry = new ydn.db.text.ResultEntry(source, query, results[i]);
+    var entry = new ydn.db.text.ResultEntry(source, query, result);
     goog.array.binaryInsert(this.results, entry,
         ydn.db.schema.fulltext.Entry.cmp);
   }

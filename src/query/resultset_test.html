@@ -8,16 +8,17 @@
     <script src="../../../ydn-db/js/deps.js"></script>
     <script type="text/javascript" src="../deps.js"></script>
     <script type="text/javascript">
-        goog.require('fullproof.ResultSet');
+        goog.require('ydn.db.text.ResultSet');
+        goog.require('ydn.db.schema.fulltext.Catalog');
     </script>
 </head>
 <body>
     <script type="text/javascript">
         goog.require('goog.testing.jsunit');
-        var ft_schema = ydn.db.schema.fulltext.InvIndex.fromJson({
+        var ft_schema = ydn.db.schema.fulltext.Catalog.fromJson({
             name: 'test',
             lang: 'en',
-            sources: [
+            indexes: [
                 {
                     storeName: 'article',
                     keyPath: 'title',
@@ -31,28 +32,38 @@
         var query = new ydn.db.text.QueryEntry('first', 'first', 0, 'article', 'title');
 
         var test_add_result = function() {
-            var rs = new fullproof.ResultSet(ft_schema, [query], 10, 1);
+            var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             var results = [];
             for (var i = 0; i < 4; i++) {
               results[i] = {
-                  key: 'first',
+                  keyword: 'first',
                   value: 'first',
-                  position: i,
-                  score: 1
+                  score: 1,
+                  source: {
+                      storeName: 'article',
+                      keyPath: 'title',
+                      primaryKey: '1',
+                      position: i
+                  }
               }
             }
             rs.addResult(query, results);
             assertEquals(4, rs.count());
         };
         var test_add_results = function() {
-            var rs = new fullproof.ResultSet(ft_schema, [query], 10, 1);
+            var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             var results = [];
             for (var i = 0; i < 4; i++) {
                 results[i] = {
-                    key: 'first',
+                    keyword: 'first',
                     value: 'first',
-                    position: i,
-                    score: 1
+                    score: 1,
+                    source: {
+                        storeName: 'article',
+                        keyPath: 'title',
+                        primaryKey: '1',
+                        position: i
+                    }
                 }
             }
             rs.addResult(query, results);
@@ -61,8 +72,13 @@
                 results[i] = {
                     key: 'second',
                     value: 'second',
-                    position: i,
-                    score: 1
+                    score: 1,
+                    source: {
+                        storeName: 'article',
+                        keyPath: 'title',
+                        primaryKey: '1',
+                        position: i
+                    }
                 }
             }
             rs.addResult(query, results);

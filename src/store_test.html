@@ -11,11 +11,10 @@
     <script type="text/javascript" src="normalizer/unicode/normalizer_lowercase_nomark.js"></script>
     <script type="text/javascript" src="normalizer/unicode/categ_letters_numbers.js"></script>
     <script type="text/javascript">
-        goog.require('fullproof.ResultSet');
+        goog.require('ydn.db.text.ResultSet');
         goog.require('ydn.debug');
         goog.require('ydn.db.Storage');
         goog.require('ydn.db.crud.Storage.text');
-        goog.require('fullproof.tests');
         goog.require('goog.testing.ContinuationTestCase');
         goog.require('goog.testing.jsunit');
     </script>
@@ -32,10 +31,10 @@
 
         };
         var db_schema = {
-            fullTextIndexes: [{
+            fullTextCatalogs: [{
                 name: 'test',
                 lang: 'en',
-                sources: [
+                indexes: [
                     {
                         storeName: 'article',
                         keyPath: 'title',
