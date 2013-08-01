@@ -20,7 +20,7 @@
 
 
 goog.provide('ydn.db.text.QueryEntry');
-goog.require('ydn.db.schema.fulltext.Entry');
+goog.require('ydn.db.text.Entry');
 
 
 
@@ -30,7 +30,7 @@ goog.require('ydn.db.schema.fulltext.Entry');
  * @param {string} value original word.
  * @param {number} position source key path.
  * @constructor
- * @extends {ydn.db.schema.fulltext.Entry}
+ * @extends {ydn.db.text.Entry}
  * @struct
  */
 ydn.db.text.QueryEntry = function(keyword, value, position) {
@@ -41,7 +41,7 @@ ydn.db.text.QueryEntry = function(keyword, value, position) {
   this.resultset = null;
   this.score = 1;
 };
-goog.inherits(ydn.db.text.QueryEntry, ydn.db.schema.fulltext.Entry);
+goog.inherits(ydn.db.text.QueryEntry, ydn.db.text.Entry);
 
 
 /**

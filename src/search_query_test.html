@@ -90,6 +90,42 @@
                 done = true;
             });
         };
+        var test_basic_query = function() {
+            var data = {
+                title: 'tiger',
+                body: 'Tiger live in forest.'
+            };
+            var db = new ydn.db.Storage('test_basic_query-1', db_schema);
+            var done;
+            var read_data, schema, result, result2;
+            waitForCondition(
+                    // Condition
+                    function () {
+                        return done;
+                    },
+                    // Continuation
+                    function () {
+                        assertEquals('has a result 1', 1, result.count());
+                        assertEquals('has a result 2', 1, result2.count());
+                        assertEquals('correct result 1', 1, result.count());
+                        reachedFinalContinuation = true;
+                        ydn.db.deleteDatabase(db.getName(), db.getType());
+                        db.close();
+                    },
+                    100, // interval
+                    1000); // maxTimeout
+            db.clear();
+            db.put('article', data);
+            db.search('test', 'Tiger').addBoth(function(x) {
+                result = x;
+                console.log(x);
+            });
+            db.search('test', 'forest').addBoth(function(x) {
+                result2 = x;
+                console.log(x);
+                done = true;
+            });
+        };
 
         var testCase = new goog.testing.ContinuationTestCase();
         testCase.autoDiscoverTests();

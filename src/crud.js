@@ -86,8 +86,14 @@ ydn.db.crud.Storage.prototype.search = function(name, query, opt_limit,
                                                 opt_threshold) {
 
   var ft_schema = this.schema.getFullTextSchema(name);
+  if (!ft_schema) {
+    new ydn.debug.error.ArgumentException('full text index catalog "' + name +
+        '" not found.');
+  }
   var result = ft_schema.engine.query(name, query, opt_limit, opt_threshold);
   if (!result) {
+    this.logger.finer('query "' + query + '" contains only noise and' +
+        ' search is ignored');
     return ydn.db.Request.succeed(ydn.db.Request.Method.SEARCH, null);
   }
   return this.getCoreOperator().search(result);

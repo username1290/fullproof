@@ -66,11 +66,11 @@ ydn.db.text.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
    */
   this.threshold = threshold;
   /**
-   * Current position of type looking up from database.
+   * Lookup iteration lap lap.
    * @type {number}
    * @private
    */
-  this.i_type_ = 0;
+  this.lap_ = 0;
   for (var i = 0; i < this.query_tokens.length; i++) {
     this.query_tokens[i].resultset = this;
   }
@@ -78,32 +78,25 @@ ydn.db.text.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
 
 
 /**
- * @const
- * @type {Array.<string>}
- */
-ydn.db.text.ResultSet.Q_TYPES = ['value', 'keyword', 'value', 'keyword'];
-
-
-/**
  * @inheritDoc
  */
 ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
-  if (this.i_type_ > ydn.db.text.ResultSet.Q_TYPES.length) {
-    return;
+  if (this.lap_ > 3) {
+    throw new ydn.debug.error.InvalidOperationException('too many loopup laps');
   }
-  var index_name = ydn.db.text.ResultSet.Q_TYPES[this.i_type_];
+  var index_name = this.lap_ == 1 ? 'keyword' : 'value';
   var store_name = this.ft_schema.getName();
   for (var j = 0; j < this.query_tokens.length; j++) {
     var token = this.query_tokens[j];
-    var key = this.i_type_ == 0 || this.i_type_ == 3 ?
-        token.getValue() : token.getKeyword();
+    var key = index_name == 'keyword' ?
+        token.getKeyword() : token.getValue();
     if (goog.isDefAndNotNull(key)) {
-      var key_range = this.i_type_ >= 2 ? ydn.db.KeyRange.starts(key) :
+      var key_range = this.lap_ == 2 ? ydn.db.KeyRange.starts(key) :
           ydn.db.KeyRange.only(key);
       cb(store_name, index_name, key_range, this.query_tokens[j]);
     }
   }
-  ++this.i_type_;
+  this.lap_++;
 };
 
 
@@ -154,13 +147,25 @@ ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
     var result = results[i];
     var sc = result['source'];
     var source = this.ft_schema.getSource(sc['storeName'], sc['keyPath']);
-    var entry = new ydn.db.text.ResultEntry(source, query, result);
+    var entry = new ydn.db.text.ResultEntry(source,
+        /** @type {ydn.db.text.QueryEntry} */ (query), result);
     goog.array.binaryInsert(this.results, entry,
-        ydn.db.schema.fulltext.Entry.cmp);
+        ydn.db.text.Entry.cmp);
   }
-  if (this.i_type_ > ydn.db.text.ResultSet.Q_TYPES.length) {
-    return false;
+  if (this.lap_ >= 3) {
+    return false; // no more lookup
   }
-  return this.count(true) <= this.limit;
+  // return this.count(true) <= this.limit;
+  return true;
+};
+
+
+/**
+ * Collect result with consolidate ranking.
+ * @return {Array}
+ */
+ydn.db.text.ResultSet.prototype.collect = function() {
+  var arr = [];
+  return arr;
 };
 

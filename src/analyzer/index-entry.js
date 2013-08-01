@@ -20,7 +20,7 @@
 
 
 goog.provide('ydn.db.text.IndexEntry');
-goog.require('ydn.db.schema.fulltext.Entry');
+goog.require('ydn.db.text.Entry');
 
 
 
@@ -34,7 +34,7 @@ goog.require('ydn.db.schema.fulltext.Entry');
  * @param {IDBKey=} opt_p_key source primary key.
  * @param {number=} opt_score score.
  * @constructor
- * @extends {ydn.db.schema.fulltext.Entry}
+ * @extends {ydn.db.text.Entry}
  * @struct
  */
 ydn.db.text.IndexEntry = function(keyword, value, position, opt_store_name,
@@ -49,7 +49,7 @@ ydn.db.text.IndexEntry = function(keyword, value, position, opt_store_name,
    */
   this.encounter_count_ = [];
 };
-goog.inherits(ydn.db.text.IndexEntry, ydn.db.schema.fulltext.Entry);
+goog.inherits(ydn.db.text.IndexEntry, ydn.db.text.Entry);
 
 
 /**

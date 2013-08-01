@@ -47,7 +47,7 @@ Animals.prototype.handleSearch = function(e) {
   var ele = document.getElementById('search_input');
   var rq = this.db.search('name', ele.value);
   rq.addProgback(function(pe) {
-    console.log(pe);
+    console.log(pe.count() + ' results found');
   }, this);
   rq.addCallback(function(pe) {
     console.log(pe);

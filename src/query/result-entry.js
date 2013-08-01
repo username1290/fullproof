@@ -20,7 +20,7 @@
 
 
 goog.provide('ydn.db.text.ResultEntry');
-goog.require('ydn.db.schema.fulltext.Entry');
+goog.require('ydn.db.text.Entry');
 
 
 
@@ -30,7 +30,7 @@ goog.require('ydn.db.schema.fulltext.Entry');
  * @param {ydn.db.text.QueryEntry} query query entry belong to this result.
  * @param {Object} json entry JSON read from the database.
  * @constructor
- * @extends {ydn.db.schema.fulltext.Entry}
+ * @extends {ydn.db.text.Entry}
  * @struct
  */
 ydn.db.text.ResultEntry = function(index, query, json) {
@@ -49,7 +49,7 @@ ydn.db.text.ResultEntry = function(index, query, json) {
    */
   this.query = query;
 };
-goog.inherits(ydn.db.text.ResultEntry, ydn.db.schema.fulltext.Entry);
+goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.Entry);
 
 
 /**
