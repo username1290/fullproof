@@ -43,7 +43,7 @@
                          input.dir="${ydn-db.dir}/js"
                          output.fn="${ydn-db-text.dir}/jsc/${text-dev-out.fn}">
             <extrapaths>
-                <arg line='-i "${ydn-db-text.dir}/src/config/text.js"'/>
+                <arg line='-i "${ydn-db-text.dir}/js/config/text.js"'/>
                 <arg line='-i "${work.dir}/ydn-base/js/config/main.js"'/>
                 <arg line='-i "${ydn-db.dir}/js/config/conn.js"'/>
                 <arg line='-i "${ydn-db.dir}/js/config/tr.js"'/>
@@ -65,7 +65,7 @@
                 <arg line='-f "--externs=${ydn-base.dir}/externs/gapi.js"'/>
                 <arg line='-f "--externs=${ydn-db-text.dir}/externs/unicode.js"'/>
                 <arg line='-p "${ydn-base.dir}/js"'/>
-                <arg line='-p "${ydn-db-text.dir}/src"'/>
+                <arg line='-p "${ydn-db-text.dir}/js"'/>
                 <arg line='-p "${work.dir}/ydn/js"'/>
                 <arg line='-p "${work.dir}/natural/js"'/>
                 <arg line='-f "--externs=${work.dir}/ydn-base/externs/s3.js"'/>
@@ -75,7 +75,7 @@
         </closure-compile>
 
         <concat destfile="${ydn-db-text.dir}/jsc/${text-dev-out.fn}" append="true">
-            <filelist dir="${ydn-db-text.dir}/src/normalizer/unicode"
+            <filelist dir="${ydn-db-text.dir}/js/normalizer/unicode"
                       files="categ_letters_numbers.js,normalizer_lowercase.js,normalizer_lowercase_nomark.js"/>
         </concat>
         <concat destfile="${ydn-db-text.dir}/jsc/${text-dev-out.fn}"
@@ -106,14 +106,14 @@
     </target>
 
     <target name="gen-all-test-js" description="generate all test js">
-        <gen-js-test base.dir="${ydn-db-text.dir}/src" ext="db"></gen-js-test>
+        <gen-js-test base.dir="${ydn-db-text.dir}/js" ext="db"></gen-js-test>
     </target>
 
     <target name="deps" description="list dependency files">
-        <delete file="${ydn-db-text.dir}/src/deps.js"/>
+        <delete file="${ydn-db-text.dir}/js/deps.js"/>
         <calc-deps
-                input.dir="${ydn-db-text.dir}/src"
-                output.fn="${ydn-db-text.dir}/src/deps.js">
+                input.dir="${ydn-db-text.dir}/js"
+                output.fn="${ydn-db-text.dir}/js/deps.js">
         </calc-deps>
     </target>
 

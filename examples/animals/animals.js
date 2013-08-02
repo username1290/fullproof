@@ -50,12 +50,17 @@ Animals.prototype.renderResult = function(arr) {
     var entry = arr[i];
     var li = document.createElement('li');
     var span = document.createElement('span');
-    span.textContent = entry.getScore().toFixed(2) + ' | ' + entry.getValue() + ' : ' + entry.getPrimaryKey();
+    // console.log(entry);
+    span.textContent = entry.score.toFixed(2) + ' | ' + entry.value + ' : ' + entry.primaryKey;
+    this.db.get(entry.storeName, entry.primaryKey).done(function(x) {
+      this.textContent += ' [Full name: ' + x.name + ']';
+    }, span);
     li.appendChild(span);
     ul.appendChild(li);
   }
   this.ele_results_.appendChild(ul);
 };
+
 
 
 /**
