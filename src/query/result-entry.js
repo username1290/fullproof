@@ -20,6 +20,7 @@
 
 
 goog.provide('ydn.db.text.ResultEntry');
+goog.require('natural.distance.Dice');
 goog.require('ydn.db.text.IndexEntry');
 
 
@@ -48,6 +49,16 @@ ydn.db.text.ResultEntry = function(query, store_name, key_path, primary_key,
   this.query = query;
 };
 goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.IndexEntry);
+
+
+/**
+ * @inheritDoc
+ */
+ydn.db.text.ResultEntry.prototype.getScore = function() {
+  var similarity = natural.distance.Dice.compare(this.query.getValue(),
+      this.value);
+  return similarity * this.score;
+};
 
 
 /**

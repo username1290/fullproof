@@ -127,6 +127,7 @@
                 <arg line='-p "${ydn-db.dir}/js/ydn/db/conn"'/>
                 <arg line='-p "${ydn-db.dir}/js/ydn/db/crud"'/>
                 <arg line='-p "${ydn-db.dir}/js/ydn/db/tr"'/>
+                <arg line='-p "${work.dir}/natural/js"'/>
                 <arg line='-f "--define=ydn.db.base.USE_HOOK=true"'/>
                 <arg line='-f "--externs=${ydn-db-text.dir}/externs/unicode.js"'/>
                 <arg line='-f "--define=ydn.db.version=${quoted-version}"'/>

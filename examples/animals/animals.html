@@ -22,7 +22,7 @@
         goog.require('ydn.base');
     </script>
     <script type="text/javascript">
-        ydn.debug.log('ydn.db', 'finest');
+        // ydn.debug.log('ydn.db', 'finest');
     </script>
 
 
@@ -43,7 +43,10 @@
             background-color: #EEEEEE;
             overflow: hidden;
         }
-
+        ul {
+            list-style: none;
+            padding: 0;
+        }
         textarea.typebox {
             float: left;
             width: 300px;
@@ -52,10 +55,14 @@
             color: black;
             background-color: white;
         }
+        #results {
+            overflow-y: auto;
+        }
         #ref {
             position: fixed;
-            bottom: 2em;
-            padding: 4px;
+            bottom: 1.5em;
+            padding: 1em;
+            background-color: white;
         }
         #status {
             background-color: #d3d3d3;

@@ -20,6 +20,7 @@
 
 
 goog.provide('ydn.db.text.IndexEntry');
+goog.require('natural.distance.Levenshtein');
 goog.require('ydn.db.text.Entry');
 
 
@@ -87,6 +88,13 @@ ydn.db.text.IndexEntry.prototype.getScore = function() {
 
 
 /**
+ * @const
+ * @type {natural.distance.Levenshtein}
+ */
+ydn.db.text.IndexEntry.levenshtein = new natural.distance.Levenshtein();
+
+
+/**
  * Token encounter in indexing string.
  * @param {number} count current word count.
  */
@@ -131,7 +139,7 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
  * @override
  */
 ydn.db.text.IndexEntry.prototype.getId = function() {
-  var id = [this.store_name, this.primary_key, this.value];
+  var id = [this.store_name, this.primary_key, this.value.toLowerCase()];
   return ydn.db.text.Entry.isArrayKeyPathSupported ?
       id : ydn.db.utils.encodeKey(id);
 };

@@ -41,16 +41,35 @@ Animals.prototype.handleInputChanged = function(e) {
 
 
 /**
+ * @param {Array.<ydn.db.text.RankEntry>} arr
+ */
+Animals.prototype.renderResult = function(arr) {
+  this.ele_results_.innerHTML = '';
+  var ul = document.createElement('ul');
+  for (var i = 0; i < arr.length; i++) {
+    var entry = arr[i];
+    var li = document.createElement('li');
+    var span = document.createElement('span');
+    span.textContent = entry.getScore().toFixed(2) + ' | ' + entry.getValue() + ' : ' + entry.getPrimaryKey();
+    li.appendChild(span);
+    ul.appendChild(li);
+  }
+  this.ele_results_.appendChild(ul);
+};
+
+
+/**
  * @param {Event} e
  */
 Animals.prototype.handleSearch = function(e) {
   var ele = document.getElementById('search_input');
   var rq = this.db.search('name', ele.value);
   rq.addProgback(function(pe) {
-    console.log(pe.count() + ' results found');
+    console.log(pe.length + ' results found');
   }, this);
   rq.addCallback(function(pe) {
     console.log(pe);
+    this.renderResult(pe);
   }, this);
 };
 
@@ -106,6 +125,8 @@ Animals.prototype.run = function() {
 };
 
 Animals.prototype.ele_status_ = document.getElementById('status');
+
+Animals.prototype.ele_results_ = document.getElementById('results');
 
 
 Animals.prototype.setStatus = function(msg) {
