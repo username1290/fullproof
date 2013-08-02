@@ -56,20 +56,15 @@ goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.IndexEntry);
  * @return {ydn.db.text.ResultEntry}
  */
 ydn.db.text.ResultEntry.fromJson = function(query, json) {
-  var id = json['id'];
+  var store_name = json['storeName'];
+  var primary_key = json['primaryKey'];
   var keyword = json['keyword'];
   var score = json['score'];
   var positions = json['positions'];
-  var key_path = json['key_path'];
+  var key_path = json['keyPath'];
   var value = json['value'];
-  goog.asserts.assertString(id[0], 'Invalid key ' +
-      JSON.stringify(id) + ' at 0.');
-  goog.asserts.assertString(id[2], 'Invalid key ' +
-      JSON.stringify(id) + ' at 1.');
-  goog.asserts.assert(goog.isDefAndNotNull(id[1]), 'Invalid key ' +
-      JSON.stringify(id) + ' at 2.');
-  return new ydn.db.text.ResultEntry(query, id[0], key_path, id[1], value,
-      keyword, positions, score);
+  return new ydn.db.text.ResultEntry(query, store_name, key_path, primaryKey,
+      value, keyword, positions, score);
 };
 
 

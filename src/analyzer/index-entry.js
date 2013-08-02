@@ -114,9 +114,11 @@ ydn.db.text.IndexEntry.prototype.compute = function() {
  */
 ydn.db.text.IndexEntry.prototype.toJson = function() {
   return {
+    'storeName': this.store_name,
+    'primaryKey': this.primary_key,
     'keyword': this.keyword,
     'value': this.value,
-    'key_path': this.key_path,
+    'keyPath': this.key_path,
     'score': this.getScore(),
     'id': this.getId(), // store name and primary key
     'positions': this.positions // .slice() // no need defensive
@@ -129,8 +131,7 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
  */
 ydn.db.text.IndexEntry.prototype.getId = function() {
   var id = [this.store_name, this.primary_key, this.value];
-  return ydn.db.text.Entry.isArrayKeyPathSupported ?
-      id : ydn.db.utils.encodeKey(id);
+  return ydn.db.utils.encodeKey(id);
 };
 
 
