@@ -86,8 +86,8 @@ ydn.db.text.Entry.prototype.getScore = function() {
  * Note: this result 0 only if the same entry is compared.
  * @param {ydn.db.text.Entry} a entry a.
  * @param {ydn.db.text.Entry} b entry b.
- * @return {number} return 1 if score of entry a is larger than that of b, -1
- * if score of entry b is larger than a, otherwise compare by id.
+ * @return {number} return 1 if score of entry a is smaller than that of b, -1
+ * if score of entry b is smaller than a, otherwise compare by id.
  */
 ydn.db.text.Entry.cmp = function(a, b) {
   if (ydn.db.cmp(a.getId(), b.getId()) == 0) {
@@ -95,7 +95,7 @@ ydn.db.text.Entry.cmp = function(a, b) {
   } else {
     var a_score = a.getScore();
     var b_score = b.getScore();
-    return a_score > b_score ? 1 : b_score > a_score ? -1 : 1;
+    return a_score > b_score ? -1 : b_score > a_score ? 1 : 1;
   }
 };
 
@@ -122,7 +122,7 @@ if (goog.DEBUG) {
    * @inheritDoc
    */
   ydn.db.text.Entry.prototype.toString = function() {
-    return 'fulltext.Entry:' + this.keyword;
+    return 'Entry:' + this.value;
   };
 }
 

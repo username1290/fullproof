@@ -72,3 +72,14 @@ ydn.db.text.ResultEntry.fromJson = function(query, json) {
       keyword, positions, score);
 };
 
+
+if (goog.DEBUG) {
+  /**
+   * @inheritDoc
+   */
+  ydn.db.text.ResultEntry.prototype.toString = function() {
+    return ['ResultEntry', this.store_name, this.primary_key,
+      this.value].join(':');
+  };
+}
+

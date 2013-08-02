@@ -159,5 +159,13 @@ ydn.db.text.IndexEntry.prototype.getPrimaryKey = function() {
 };
 
 
-
+if (goog.DEBUG) {
+  /**
+   * @inheritDoc
+   */
+  ydn.db.text.IndexEntry.prototype.toString = function() {
+    return ['IndexEntry', this.store_name, this.primary_key,
+      this.value].join(':');
+  };
+}
 

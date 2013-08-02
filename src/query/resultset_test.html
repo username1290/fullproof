@@ -102,8 +102,52 @@
                 id: ['article', 'title', 'key1', 'a']
             }]);
             var results = rs.collect();
-            assertEquals('score', 1, results[0].getScore());
+            assertEquals('basic score', 1, results[0].getScore());
 
+            rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
+            rs.addResult(query, [{
+                key: 'a',
+                score: 1,
+                positions: [1],
+                id: ['article', 'body', 'key2', 'a']
+            }]);
+            results = rs.collect();
+            assertEquals('weighted score', 0.5, results[0].getScore());
+        };
+        var test_scoring_composite = function() {
+            var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
+            rs.addResult(query, [{
+                key: 'a',
+                score: 1,
+                positions: [1],
+                id: ['article', 'title', 'key3', 'a']
+            }, {
+                key: 'a',
+                score: 1,
+                positions: [1],
+                id: ['article', 'body', 'key3', 'a']
+            }]);
+            var results = rs.collect();
+            assertEquals('number of result', 1, results.length);
+            assertEquals('compound score', 1.5, results[0].getScore());
+        };
+        var test_ranking = function() {
+            var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
+            rs.addResult(query, [{
+                key: 'a',
+                score: 1,
+                positions: [1],
+                id: ['article', 'body', 'key1', 'a']
+            }, {
+                key: 'a',
+                score: 1,
+                positions: [1],
+                id: ['article', 'title', 'key2', 'a']
+            }]);
+            var results = rs.collect();
+            assertEquals('number of result', 2, results.length);
+            assertEquals('compound score', 1, results[0].getScore());
+            assertEquals('compound score', 0.5, results[1].getScore());
         };
     </script>
 </body>

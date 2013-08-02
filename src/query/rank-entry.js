@@ -63,9 +63,10 @@ ydn.db.text.RankEntry.prototype.merge = function(entry) {
     goog.asserts.assert(this.store_name == entry.store_name, 'store_name');
     goog.asserts.assert(this.primary_key == entry.primary_key, 'primary_key');
     goog.asserts.assert(this.value == entry.value, 'value');
+    goog.asserts.assert(entry.results.length == 1, 'must only have one result');
   }
   if (this.key_path != entry.key_path) {
-    this.results.push(entry);
+    this.results.push(entry.results[0]);
   } // otherwise, same result - we ignore
 };
 
@@ -74,6 +75,7 @@ ydn.db.text.RankEntry.prototype.merge = function(entry) {
  * @inheritDoc
  */
 ydn.db.text.RankEntry.prototype.getScore = function() {
+  console.log('scoring ' + this);
   var score = 0;
   for (var i = 0; i < this.results.length; i++) {
     var entry = this.results[i];
@@ -81,8 +83,23 @@ ydn.db.text.RankEntry.prototype.getScore = function() {
         entry.getKeyPath());
     goog.asserts.assertObject(index, 'Index for ' + entry.getStoreName() +
         ':' + entry.getKeyPath() + ' not found.');
-    score += entry.getScore() * index.getWeight();
+    var s1 = entry.getScore();
+    console.log(entry.toString(), s1);
+    var s = s1 * index.getWeight();
+    console.log(s1, s);
+    score += s;
   }
   return score;
 };
+
+
+if (goog.DEBUG) {
+  /**
+   * @inheritDoc
+   */
+  ydn.db.text.RankEntry.prototype.toString = function() {
+    return ['RankEntry', this.store_name, this.primary_key,
+      this.value].join(':') + '[' + this.results.length + ']';
+  };
+}
 
