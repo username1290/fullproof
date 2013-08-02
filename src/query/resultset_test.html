@@ -30,7 +30,7 @@
                     weight: 0.5
                 }]
         });
-        var query = new ydn.db.text.QueryEntry('first', 'first', 0, 'article', 'title');
+        var query = new ydn.db.text.QueryEntry('TGR', 'tiger', 0, 'article', 'title');
 
         var test_add_result = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
@@ -105,22 +105,22 @@
         var test_scoring = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             rs.addResult(query, [{
-                value: 'a',
+                value: 'tiger',
                 score: 1,
                 positions: [1],
                 keyPath: 'title',
-                id: ['article', 'key1', 'a']
+                id: ['article', 'key1', 'tiger']
             }]);
             var results = rs.collect();
             assertEquals('basic score', 1, results[0].getScore());
 
             rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             rs.addResult(query, [{
-                value: 'a',
+                value: 'tiger',
                 score: 1,
                 positions: [1],
                 keyPath: 'body',
-                id: ['article', 'key2', 'a']
+                id: ['article', 'key2', 'tiger']
             }]);
             results = rs.collect();
             assertEquals('weighted score', 0.5, results[0].getScore());
@@ -128,17 +128,17 @@
         var test_scoring_composite = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             rs.addResult(query, [{
-                value: 'a',
+                value: 'tiger',
                 score: 1,
                 positions: [1],
                 keyPath: 'title',
-                id: ['article', 'key3', 'a']
+                id: ['article', 'key3', 'tiger']
             }, {
-                value: 'a',
+                value: 'tiger',
                 score: 1,
                 positions: [1],
                 keyPath: 'body',
-                id: ['article', 'key3', 'a']
+                id: ['article', 'key3', 'tiger']
             }]);
             var results = rs.collect();
             assertEquals('number of result', 1, results.length);
@@ -147,17 +147,17 @@
         var test_ranking = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             rs.addResult(query, [{
-                value: 'a',
+                value: 'tiger',
                 score: 1,
                 positions: [1],
                 keyPath: 'body',
-                id: ['article', 'key1', 'a']
+                id: ['article', 'key1', 'tiger']
             }, {
-                value: 'a',
+                value: 'tiger',
                 score: 1,
                 positions: [1],
                 keyPath: 'title',
-                id: ['article', 'key2', 'a']
+                id: ['article', 'key2', 'tiger']
             }]);
             var results = rs.collect();
             assertEquals('number of result', 2, results.length);
