@@ -113,9 +113,10 @@ ydn.db.text.IndexEntry.prototype.compute = function() {
  * @return {!Object} JSON to stored into the database.
  */
 ydn.db.text.IndexEntry.prototype.toJson = function() {
+  // ideally, we want to use composite key ['storeName', 'primaryKey', 'value']
+  // but IE10 does not support composite key, so encoded key, as used here
+  // is workaround.
   return {
-    'storeName': this.store_name,
-    'primaryKey': this.primary_key,
     'keyword': this.keyword,
     'value': this.value,
     'keyPath': this.key_path,
@@ -131,7 +132,8 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
  */
 ydn.db.text.IndexEntry.prototype.getId = function() {
   var id = [this.store_name, this.primary_key, this.value];
-  return ydn.db.utils.encodeKey(id);
+  return ydn.db.text.Entry.isArrayKeyPathSupported ?
+      id : ydn.db.utils.encodeKey(id);
 };
 
 

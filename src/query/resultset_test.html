@@ -38,7 +38,7 @@
               results[i] = {
                   keyword: 'first' + i,
                   value: 'first' + i,
-                  key_path: 'title',
+                  keyPath: 'title',
                   score: 1,
                   positions: [2],
                   id: ['article', 'key' + i, 'first']
@@ -52,20 +52,20 @@
             rs.addResult(query, [{
                 value: 'a',
                 score: 1,
-                key_path: 'title',
+                keyPath: 'title',
                 positions: [2],
                 id: ['article', 'key1', 'a']
             }, {
                 value: 'b',
                 score: 1,
-                key_path: 'title',
+                keyPath: 'title',
                 positions: [2],
                 id: ['article', 'key1', 'b']
             }, {
                 value: 'b',
                 score: 1,
                 positions: [2],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key1', 'b'] // repeat entry
             }]);
             assertEquals('repeat entry', 2, rs.collect().length);
@@ -73,13 +73,13 @@
                 value: 'b',
                 score: 1,
                 positions: [10],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key1', 'b'] // repeat entry
             }, {
                 value: 'c',
                 score: 0.5,
                 positions: [3],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key1', 'c']
             }]);
             assertEquals('repeat entry in next', 3, rs.collect().length);
@@ -89,13 +89,13 @@
                 value: 'a',
                 score: 1,
                 positions: [10],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key1', 'a']
             }, {
                 value: 'a',
                 score: 1,
                 positions: [3],
-                key_path: 'body',
+                keyPath: 'body',
                 id: ['article', 'key1', 'a'] // repeat entry
             }]);
             assertEquals('same entry with different path', 1, rs.collect().length);
@@ -107,7 +107,7 @@
                 value: 'a',
                 score: 1,
                 positions: [1],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key1', 'a']
             }]);
             var results = rs.collect();
@@ -118,7 +118,7 @@
                 value: 'a',
                 score: 1,
                 positions: [1],
-                key_path: 'body',
+                keyPath: 'body',
                 id: ['article', 'key2', 'a']
             }]);
             results = rs.collect();
@@ -130,13 +130,13 @@
                 value: 'a',
                 score: 1,
                 positions: [1],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key3', 'a']
             }, {
                 value: 'a',
                 score: 1,
                 positions: [1],
-                key_path: 'body',
+                keyPath: 'body',
                 id: ['article', 'key3', 'a']
             }]);
             var results = rs.collect();
@@ -149,13 +149,13 @@
                 value: 'a',
                 score: 1,
                 positions: [1],
-                key_path: 'body',
+                keyPath: 'body',
                 id: ['article', 'key1', 'a']
             }, {
                 value: 'a',
                 score: 1,
                 positions: [1],
-                key_path: 'title',
+                keyPath: 'title',
                 id: ['article', 'key2', 'a']
             }]);
             var results = rs.collect();
