@@ -40,6 +40,12 @@ goog.require('ydn.db.text.Entry');
 ydn.db.text.IndexEntry = function(store_name, key_path, primary_key, value,
                                   keyword, opt_positions, opt_score) {
   goog.base(this, keyword, value, opt_score);
+  goog.asserts.assertString(store_name, 'invalid store name "' +
+      store_name + '"');
+  goog.asserts.assert(goog.isDefAndNotNull(primary_key),
+      'invalid primary_key "' + primary_key + '"');
+  goog.asserts.assertString(value, 'invalid value "' +
+      value + '"');
   /**
    * @final
    * @type {string}
@@ -110,8 +116,9 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
   return {
     'keyword': this.keyword,
     'value': this.value,
+    'key_path': this.key_path,
     'score': this.getScore(),
-    'id': this.getId(),
+    'id': this.getId(), // store name and primary key
     'positions': this.positions // .slice() // no need defensive
   };
 };

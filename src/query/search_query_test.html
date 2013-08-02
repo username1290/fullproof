@@ -20,8 +20,8 @@
     </script>
     <script src="../../../ydn-db/js/config/conn.js"></script>
     <script type="text/javascript">
-        ydn.db.crud.Storage.text.DEBUG = true;
-        ydn.debug.log('ydn.db', 'finest');
+        // ydn.db.crud.Storage.text.DEBUG = true;
+        // ydn.debug.log('ydn.db', 'finest');
     </script>
 </head>
 <body>
@@ -29,7 +29,6 @@
         var reachedFinalContinuation;
         var setUp = function () {
             reachedFinalContinuation = false;
-
         };
         var db_schema = {
             fullTextCatalogs: [{
@@ -54,8 +53,8 @@
         };
         var test_inject = function() {
             var data = {
-                title: 't1',
-                body: 'This is a test for data injection. Only one entry injected'
+                title: 'tiger',
+                body: 'This is a test for data injection. Only one tiger injected'
             };
             var db = new ydn.db.Storage('test_inject-2', db_schema);
             var done;
@@ -69,8 +68,8 @@
                     function () {
                         var store_names = schema.stores.map(function(x) {return x.name});
                         assertArrayEquals('two object store', ['article', 'test'], store_names);
-                        assertObjectEquals('article t1 inserted as it is', data, read_data);
-                        assertNotEquals('index t1 exist', 0, keywords.length);
+                        assertObjectEquals('article tiger inserted as it is', data, read_data);
+                        assertNotEquals('index tiger exist', 0, keywords.length);
                         reachedFinalContinuation = true;
                         ydn.db.deleteDatabase(db.getName(), db.getType());
                         db.close();
@@ -82,10 +81,13 @@
             });
             db.clear();
             db.put('article', data);
-            db.get('article', 't1').addBoth(function(x) {
+            db.get('article', 'tiger').addBoth(function(x) {
                 read_data = x;
             });
-            db.keys('test', 'value', ydn.db.KeyRange.only('t1')).addBoth(function(x) {
+            db.values('test').addBoth(function(x) {
+                console.log('test store', x);
+            });
+            db.keys('test', 'value', ydn.db.KeyRange.only('tiger')).addBoth(function(x) {
                 keywords = x;
                 console.log(x);
                 done = true;
@@ -93,7 +95,7 @@
         };
         var test_basic_query = function() {
             var data = {
-                title: 'tiger',
+                title: 'Tiger',
                 body: 'Tiger live in forest.'
             };
             var db = new ydn.db.Storage('test_basic_query-1', db_schema);
@@ -106,9 +108,9 @@
                     },
                     // Continuation
                     function () {
-                        assertEquals('has a result 1', 1, result.count());
-                        assertEquals('has a result 2', 1, result2.count());
-                        assertEquals('correct result 1', 1, result.count());
+                        assertEquals('Tiger has a result 1', 1, result.length);
+                        assertEquals('has a result 2', 1, result2.length);
+                        assertEquals('correct result 1', 1, result.length);
                         reachedFinalContinuation = true;
                         ydn.db.deleteDatabase(db.getName(), db.getType());
                         db.close();
@@ -118,12 +120,12 @@
             db.clear();
             db.put('article', data);
             db.search('test', 'Tiger').addBoth(function(x) {
+                // console.log('Tiger', x)
                 result = x;
-                console.log(x);
             });
             db.search('test', 'forest').addBoth(function(x) {
                 result2 = x;
-                console.log(x);
+                // console.log('forest', x);
                 done = true;
             });
         };

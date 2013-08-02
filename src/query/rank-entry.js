@@ -75,7 +75,6 @@ ydn.db.text.RankEntry.prototype.merge = function(entry) {
  * @inheritDoc
  */
 ydn.db.text.RankEntry.prototype.getScore = function() {
-  console.log('scoring ' + this);
   var score = 0;
   for (var i = 0; i < this.results.length; i++) {
     var entry = this.results[i];
@@ -84,10 +83,8 @@ ydn.db.text.RankEntry.prototype.getScore = function() {
     goog.asserts.assertObject(index, 'Index for ' + entry.getStoreName() +
         ':' + entry.getKeyPath() + ' not found.');
     var s1 = entry.getScore();
-    console.log(entry.toString(), s1);
-    var s = s1 * index.getWeight();
-    console.log(s1, s);
-    score += s;
+    // console.log(entry.toString(), s1);
+    score += s1 * index.getWeight();
   }
   return score;
 };

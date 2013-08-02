@@ -60,15 +60,15 @@ ydn.db.text.ResultEntry.fromJson = function(query, json) {
   var keyword = json['keyword'];
   var score = json['score'];
   var positions = json['positions'];
+  var key_path = json['key_path'];
+  var value = json['value'];
   goog.asserts.assertString(id[0], 'Invalid key ' +
       JSON.stringify(id) + ' at 0.');
-  goog.asserts.assertString(id[1], 'Invalid key ' +
-      JSON.stringify(id) + ' at 1.');
   goog.asserts.assertString(id[2], 'Invalid key ' +
+      JSON.stringify(id) + ' at 1.');
+  goog.asserts.assert(goog.isDefAndNotNull(id[1]), 'Invalid key ' +
       JSON.stringify(id) + ' at 2.');
-  goog.asserts.assert(goog.isDefAndNotNull(id[3]), 'Invalid key ' +
-      JSON.stringify(id) + ' at 3.');
-  return new ydn.db.text.ResultEntry(query, id[0], id[1], id[2], id[3],
+  return new ydn.db.text.ResultEntry(query, id[0], key_path, id[1], value,
       keyword, positions, score);
 };
 
