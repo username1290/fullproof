@@ -40,40 +40,71 @@
                   value: 'first' + i,
                   score: 1,
                   positions: [2],
-                  id: ['article','title', 'key' + i, 'first']
+                  id: ['article', 'title', 'key' + i, 'first']
               }
             }
             rs.addResult(query, results);
-            assertEquals(4, rs.count());
+            assertEquals(4, rs.collect().length);
         };
         var test_add_results = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
-            var results = [];
-            for (var i = 0; i < 2; i++) {
-                results[i] = {
-                    keyword: 'first' + i,
-                    score: 1,
-                    positions: [2],
-                    id: ['article', 'title', 'key' + i, 'first']
-                }
-            }
-            rs.addResult(query, results);
-            results = [{
-                    key: 'second',
-                    score: 1,
-                    positions: [10],
-                    id: ['article', 'body', 'key' + 1, 'FST']
-                }, {
-                key: 'third',
+            rs.addResult(query, [{
+                keyword: 'a',
+                score: 1,
+                positions: [2],
+                id: ['article', 'title', 'key1', 'a']
+            }, {
+                keyword: 'b',
+                score: 1,
+                positions: [2],
+                id: ['article', 'title', 'key1', 'b']
+            }, {
+                keyword: 'c',
+                score: 1,
+                positions: [2],
+                id: ['article', 'title', 'key1', 'b'] // repeat entry
+            }]);
+            assertEquals('repeat entry', 2, rs.collect().length);
+            rs.addResult(query, [{
+                key: 'd',
+                score: 1,
+                positions: [10],
+                id: ['article', 'title', 'key1', 'b'] // repeat entry
+            }, {
+                key: 'c',
                 score: 0.5,
                 positions: [3],
-                id: ['article', 'body', 'key' + 5, 'FST']
-            }
-            ];
-            rs.addResult(query, results);
-            assertEquals(3, rs.count());
-        };
+                id: ['article', 'title', 'key1', 'c']
+            }]);
+            assertEquals('repeat entry in next', 3, rs.collect().length);
 
+            rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
+            rs.addResult(query, [{
+                key: 'a',
+                score: 1,
+                positions: [10],
+                id: ['article', 'title', 'key1', 'a']
+            }, {
+                key: 'c',
+                score: 1,
+                positions: [3],
+                id: ['article', 'body', 'key1', 'a'] // repeat entry
+            }]);
+            assertEquals('same entry with different path', 1, rs.collect().length);
+
+        };
+        var test_scoring = function() {
+            var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
+            rs.addResult(query, [{
+                key: 'a',
+                score: 1,
+                positions: [1],
+                id: ['article', 'title', 'key1', 'a']
+            }]);
+            var results = rs.collect();
+            assertEquals('score', 1, results[0].getScore());
+
+        };
     </script>
 </body>
 </html>

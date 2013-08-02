@@ -21,6 +21,7 @@
 goog.provide('ydn.db.text.ResultSet');
 goog.require('ydn.db.KeyRange');
 goog.require('ydn.db.text.QueryEntry');
+goog.require('ydn.db.text.RankEntry');
 goog.require('ydn.db.text.ResultEntry');
 
 
@@ -42,7 +43,7 @@ ydn.db.text.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
    * @protected
    * @type {ydn.db.schema.fulltext.Catalog}
    */
-  this.ft_schema = ft_schema;
+  this.catalog = ft_schema;
   /**
    * @protected
    * @type {Array.<ydn.db.text.QueryEntry>}
@@ -85,7 +86,7 @@ ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
     throw new ydn.debug.error.InvalidOperationException('too many loopup laps');
   }
   var index_name = this.lap_ == 1 ? 'keyword' : 'value';
-  var store_name = this.ft_schema.getName();
+  var store_name = this.catalog.getName();
   for (var j = 0; j < this.query_tokens.length; j++) {
     var token = this.query_tokens[j];
     var key = index_name == 'keyword' ?
@@ -105,9 +106,9 @@ ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
  * @return {!Array.<string>}
  */
 ydn.db.text.ResultSet.prototype.getStoreList = function() {
-  var store_names = [this.ft_schema.getName()];
-  for (var i = 0; i < this.ft_schema.count(); i++) {
-    var source_name = this.ft_schema.index(i).getStoreName();
+  var store_names = [this.catalog.getName()];
+  for (var i = 0; i < this.catalog.count(); i++) {
+    var source_name = this.catalog.index(i).getStoreName();
     if (store_names.indexOf(source_name) == -1) {
       store_names.push(source_name);
     }
@@ -121,7 +122,7 @@ ydn.db.text.ResultSet.prototype.getStoreList = function() {
  */
 ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
-    var entry = new ydn.db.text.ResultEntry(
+    var entry = ydn.db.text.ResultEntry.fromJson(
         /** @type {ydn.db.text.QueryEntry} */ (query), results[i]);
     this.results.push(entry);
   }
@@ -139,6 +140,16 @@ ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
  */
 ydn.db.text.ResultSet.prototype.collect = function() {
   var arr = [];
+  for (var i = 0; i < this.results.length; i++) {
+    var entry = new ydn.db.text.RankEntry(this.catalog, this.results[i]);
+    var index = goog.array.binarySearch(arr, entry, ydn.db.text.Entry.cmp);
+    if (index < 0) {
+      goog.array.insertAt(arr, entry, -(index + 1));
+    } else {
+      var existing_entry = arr[index];
+      existing_entry.merge(entry);
+    }
+  }
   return arr;
 };
 

@@ -26,7 +26,10 @@ goog.require('ydn.db.text.Entry');
 
 /**
  * Index entry for scoring keyword and saving to database.
- * @param {Array} id inverted index schema.
+ * @param {string} store_name inverted index schema.
+ * @param {string} key_path inverted index schema.
+ * @param {IDBKey} primary_key inverted index schema.
+ * @param {string} value inverted index schema.
  * @param {string} keyword normalized value of original word.
  * @param {Array.<number>=} opt_positions score.
  * @param {number=} opt_score score.
@@ -34,31 +37,32 @@ goog.require('ydn.db.text.Entry');
  * @extends {ydn.db.text.Entry}
  * @struct
  */
-ydn.db.text.IndexEntry = function(id, keyword, opt_positions, opt_score) {
-  goog.base(this, keyword, id[3], opt_score);
+ydn.db.text.IndexEntry = function(store_name, key_path, primary_key, value,
+                                  keyword, opt_positions, opt_score) {
+  goog.base(this, keyword, value, opt_score);
   /**
    * @final
-   * @type {string?}
+   * @type {string}
    * @protected
    */
-  this.store_name = id[0];
+  this.store_name = store_name;
   /**
    * @final
-   * @type {string?}
+   * @type {string}
    * @protected
    */
-  this.key_path = id[1];
+  this.key_path = key_path;
   /**
    * @final
-   * @type {IDBKey?}
+   * @type {IDBKey}
    * @protected
    */
-  this.primary_key = id[2];
+  this.primary_key = primary_key;
   /**
    * Word count that this keyword encounter in the document.
    * @final
    * @protected
-   * @type {Array.<number>}
+   * @type {!Array.<number>}
    */
   this.positions = opt_positions || [];
 };
@@ -117,10 +121,7 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
  * @override
  */
 ydn.db.text.IndexEntry.prototype.getId = function() {
-  var st = this.store_name || '';
-  var kr = this.primary_key || '';
-  var kp = this.key_path || '';
-  var id = [st, kr, kp, this.value];
+  var id = [this.store_name, this.primary_key, this.value];
   return ydn.db.text.Entry.isArrayKeyPathSupported ?
       id : ydn.db.utils.encodeKey(id);
 };
@@ -143,10 +144,20 @@ ydn.db.text.IndexEntry.prototype.getKeyPath = function() {
 
 
 /**
+ * @return {!Array.<number>} source primary key.
+ */
+ydn.db.text.IndexEntry.prototype.getPositions = function() {
+  return this.positions.slice();
+};
+
+
+/**
  * @return {IDBKey} source primary key.
  */
 ydn.db.text.IndexEntry.prototype.getPrimaryKey = function() {
   return /** @type {IDBKey} */ (this.primary_key);
 };
+
+
 
 

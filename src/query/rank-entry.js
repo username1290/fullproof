@@ -26,17 +26,63 @@ goog.require('ydn.db.text.IndexEntry');
 
 /**
  * Output result entry.
- * @param {ydn.db.text.Entry} entry original entry.
+ * @param {ydn.db.schema.fulltext.Catalog} catalog original entry.
+ * @param {ydn.db.text.ResultEntry} entry original entry.
  * @constructor
- * @extends {ydn.db.text.Entry}
+ * @extends {ydn.db.text.IndexEntry}
  * @struct
  */
-ydn.db.text.RankEntry = function(entry) {
-  goog.base(this, entry.getKeyword(), entry.getValue(), entry.getScore());
+ydn.db.text.RankEntry = function(catalog, entry) {
+  goog.base(this, entry.getStoreName(), entry.getKeyPath(),
+      entry.getPrimaryKey(), entry.getValue(), entry.getKeyword(),
+      [], NaN);
+  /**
+   * @protected
+   * @final
+   * @type {ydn.db.schema.fulltext.Catalog}
+   */
+  this.catalog = catalog;
+  /**
+   * Original result entry.
+   * @type {Array.<ydn.db.text.ResultEntry>}
+   * @protected
+   * @final
+   */
+  this.results = [entry];
 };
-goog.inherits(ydn.db.text.RankEntry, ydn.db.text.Entry);
+goog.inherits(ydn.db.text.RankEntry, ydn.db.text.IndexEntry);
 
 
+/**
+ * Merge resulting entry of same reference.
+ * @param {ydn.db.text.RankEntry} entry
+ */
+ydn.db.text.RankEntry.prototype.merge = function(entry) {
+  if (goog.DEBUG) {
+    // merge only with same reference token.
+    goog.asserts.assert(this.store_name == entry.store_name, 'store_name');
+    goog.asserts.assert(this.primary_key == entry.primary_key, 'primary_key');
+    goog.asserts.assert(this.value == entry.value, 'value');
+  }
+  if (this.key_path != entry.key_path) {
+    this.results.push(entry);
+  } // otherwise, same result - we ignore
+};
 
 
+/**
+ * @inheritDoc
+ */
+ydn.db.text.RankEntry.prototype.getScore = function() {
+  var score = 0;
+  for (var i = 0; i < this.results.length; i++) {
+    var entry = this.results[i];
+    var index = this.catalog.getSource(entry.getStoreName(),
+        entry.getKeyPath());
+    goog.asserts.assertObject(index, 'Index for ' + entry.getStoreName() +
+        ':' + entry.getKeyPath() + ' not found.');
+    score += entry.getScore() * index.getWeight();
+  }
+  return score;
+};
 

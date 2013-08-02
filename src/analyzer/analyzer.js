@@ -167,10 +167,10 @@ fullproof.Analyzer.prototype.scoreQuery = function(text) {
 /**
  * @param {string} text text to be prase and scored.
  * @param {ydn.db.schema.fulltext.InvIndex} source inverted index.
- * @param {IDBKey=} opt_key primary key.
+ * @param {IDBKey} key primary key.
  * @return {Array.<ydn.db.text.IndexEntry>} scores for each unique token.
  */
-fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
+fullproof.Analyzer.prototype.score = function(text, source, key) {
   var tokens = [];
   var positions = [];
   // Note: parse is always sync.
@@ -186,7 +186,6 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
 
   var store_name = source.getStoreName();
   var key_path = source.getKeyPath();
-  var key = opt_key || null;
   var scores = [];
   var wordcount = 0;
   for (var i = 0; i < tokens.length; i++) {
@@ -196,8 +195,8 @@ fullproof.Analyzer.prototype.score = function(text, source, opt_key) {
         return s.getKeyword() == word;
       });
       if (!score) {
-        score = new ydn.db.text.IndexEntry([store_name, key_path, key,
-          tokens[i]], word);
+        score = new ydn.db.text.IndexEntry(store_name, key_path, key,
+          tokens[i], word);
         scores.push(score);
       }
       score.encounter(++wordcount);

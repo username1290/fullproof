@@ -21,6 +21,7 @@
 
 goog.provide('ydn.db.text.Entry');
 goog.require('goog.userAgent.product');
+goog.require('ydn.db');
 goog.require('ydn.db.schema.fulltext.Entry');
 goog.require('ydn.db.utils');
 
@@ -89,10 +90,13 @@ ydn.db.text.Entry.prototype.getScore = function() {
  * if score of entry b is larger than a, otherwise compare by id.
  */
 ydn.db.text.Entry.cmp = function(a, b) {
-  var a_score = a.getScore();
-  var b_score = b.getScore();
-  return a_score > b_score ? 1 : b_score > a_score ? -1 :
-      a.getId() > b.getId() ? 1 : a.getId() < b.getId() ? -1 : 0;
+  if (ydn.db.cmp(a.getId(), b.getId()) == 0) {
+    return 0;
+  } else {
+    var a_score = a.getScore();
+    var b_score = b.getScore();
+    return a_score > b_score ? 1 : b_score > a_score ? -1 : 1;
+  }
 };
 
 
@@ -100,7 +104,7 @@ ydn.db.text.Entry.cmp = function(a, b) {
  * @final
  * @type {boolean}
  */
-ydn.db.text.Entry.isArrayKeyPathSupported = goog.userAgent.product.CHROME &&
+ydn.db.text.Entry.isArrayKeyPathSupported = goog.userAgent.product.CHROME ||
     goog.userAgent.product.FIREFOX;
 
 

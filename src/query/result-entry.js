@@ -26,22 +26,22 @@ goog.require('ydn.db.text.IndexEntry');
 
 /**
  * Entry restored from the database.
- * @param {ydn.db.text.QueryEntry} query query entry belong to this result.
- * @param {Object} json entry JSON read from the database.
+ * @param {ydn.db.text.QueryEntry} query
+ * @param {string} store_name inverted index schema.
+ * @param {string} key_path inverted index schema.
+ * @param {IDBKey} primary_key inverted index schema.
+ * @param {string} value inverted index schema.
+ * @param {string} keyword normalized value of original word.
+ * @param {Array.<number>=} opt_positions score.
+ * @param {number=} opt_score score.
  * @constructor
  * @extends {ydn.db.text.IndexEntry}
  * @struct
  */
-ydn.db.text.ResultEntry = function(query, json) {
-  // the primary key 'id' is composite key having store name, key path, key
-  // and value. @see ydn.db.text.IndexEntry#getId().
-  var id = json['id'];
-  if (goog.isString(id)) {
-    id = ydn.db.utils.decodeKey(id);
-  }
-  goog.asserts.assertArray(id, 'Inverted entry key "' + json['id'] + '" is ' +
-      'invalid.');
-  goog.base(this, id, json['keyword'], json['positions'], json['score']);
+ydn.db.text.ResultEntry = function(query, store_name, key_path, primary_key,
+    value, keyword, opt_positions, opt_score) {
+  goog.base(this, store_name, key_path, primary_key, value,
+      keyword, opt_positions, opt_score);
   /**
    * @type {ydn.db.text.QueryEntry}
    */
@@ -50,6 +50,25 @@ ydn.db.text.ResultEntry = function(query, json) {
 goog.inherits(ydn.db.text.ResultEntry, ydn.db.text.IndexEntry);
 
 
-
-
+/**
+ * @param {ydn.db.text.QueryEntry} query
+ * @param {Object} json
+ * @return {ydn.db.text.ResultEntry}
+ */
+ydn.db.text.ResultEntry.fromJson = function(query, json) {
+  var id = json['id'];
+  var keyword = json['keyword'];
+  var score = json['score'];
+  var positions = json['positions'];
+  goog.asserts.assertString(id[0], 'Invalid key ' +
+      JSON.stringify(id) + ' at 0.');
+  goog.asserts.assertString(id[1], 'Invalid key ' +
+      JSON.stringify(id) + ' at 1.');
+  goog.asserts.assertString(id[2], 'Invalid key ' +
+      JSON.stringify(id) + ' at 2.');
+  goog.asserts.assert(goog.isDefAndNotNull(id[3]), 'Invalid key ' +
+      JSON.stringify(id) + ' at 3.');
+  return new ydn.db.text.ResultEntry(query, id[0], id[1], id[2], id[3],
+      keyword, positions, score);
+};
 
