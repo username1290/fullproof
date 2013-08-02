@@ -20,8 +20,8 @@
 
 
 goog.provide('ydn.db.text.RankEntry');
-goog.require('ydn.db.text.IndexEntry');
 goog.require('natural.distance.Levenshtein');
+goog.require('ydn.db.text.IndexEntry');
 
 
 

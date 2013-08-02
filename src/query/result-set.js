@@ -136,7 +136,7 @@ ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
 
 /**
  * Collect non-redundant result with consolidate ranking.
- * @return {Array.<ydn.db.text.RankEntry>}
+ * @return {Array}
  */
 ydn.db.text.ResultSet.prototype.collect = function() {
   var arr = [];
@@ -150,6 +150,8 @@ ydn.db.text.ResultSet.prototype.collect = function() {
       existing_entry.merge(entry);
     }
   }
-  return arr;
+  return arr.map(function(x) {
+    return x.toJson();
+  });
 };
 

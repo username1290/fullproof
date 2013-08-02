@@ -128,6 +128,8 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
     'keyword': this.keyword,
     'value': this.value,
     'keyPath': this.key_path,
+    'primaryKey': this.primary_key,
+    'storeName': this.store_name,
     'score': this.getScore(),
     'id': this.getId(), // store name and primary key
     'positions': this.positions // .slice() // no need defensive

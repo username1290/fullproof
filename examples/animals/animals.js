@@ -64,11 +64,11 @@ Animals.prototype.renderResult = function(arr) {
 Animals.prototype.handleSearch = function(e) {
   var ele = document.getElementById('search_input');
   var rq = this.db.search('name', ele.value);
-  rq.addProgback(function(pe) {
-    console.log(pe.length + ' results found');
+  rq.progress(function(pe) {
+    // console.log(pe.length + ' results found');
   }, this);
-  rq.addCallback(function(pe) {
-    console.log(pe);
+  rq.done(function(pe) {
+    // console.log(pe);
     this.renderResult(pe);
   }, this);
 };
