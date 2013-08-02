@@ -129,7 +129,7 @@ fullproof.Analyzer.prototype.tokenize = function(text, callback) {
 /**
  * Score a query.
  * @param {string} text
- * @return {Array.<ydn.db.text.QueryEntry>}
+ * @return {Array.<ydn.db.text.QueryToken>}
  */
 fullproof.Analyzer.prototype.scoreQuery = function(text) {
   var tokens = [];
@@ -154,7 +154,7 @@ fullproof.Analyzer.prototype.scoreQuery = function(text) {
         return s.getKeyword() == word;
       });
       if (!score) {
-        score = new ydn.db.text.QueryEntry(word, tokens[i], positions[i]);
+        score = new ydn.db.text.QueryToken(tokens[i], word, positions[i]);
         scores.push(score);
       }
     }

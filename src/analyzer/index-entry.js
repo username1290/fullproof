@@ -21,32 +21,32 @@
 
 goog.provide('ydn.db.text.IndexEntry');
 goog.require('natural.distance.Levenshtein');
-goog.require('ydn.db.text.Entry');
+goog.require('ydn.db.text.Token');
 
 
 
 /**
- * Index entry for scoring keyword and saving to database.
+ * Inverted Index entry.
  * @param {string} store_name inverted index schema.
  * @param {string} key_path inverted index schema.
  * @param {IDBKey} primary_key inverted index schema.
- * @param {string} value inverted index schema.
+ * @param {string} value token value. The value is converted into lower case.
  * @param {string} keyword normalized value of original word.
  * @param {Array.<number>=} opt_positions score.
  * @param {number=} opt_score score.
  * @constructor
- * @extends {ydn.db.text.Entry}
+ * @extends {ydn.db.text.Token}
  * @struct
  */
 ydn.db.text.IndexEntry = function(store_name, key_path, primary_key, value,
                                   keyword, opt_positions, opt_score) {
-  goog.base(this, keyword, value, opt_score);
   goog.asserts.assertString(store_name, 'invalid store name "' +
       store_name + '"');
   goog.asserts.assert(goog.isDefAndNotNull(primary_key),
       'invalid primary_key "' + primary_key + '"');
-  goog.asserts.assertString(value, 'invalid value "' +
-      value + '"');
+  goog.asserts.assertString(value, 'invalid value "' + value + '"');
+  value = value.toLowerCase();
+  goog.base(this, value, keyword, opt_score);
   /**
    * @final
    * @type {string}
@@ -73,7 +73,7 @@ ydn.db.text.IndexEntry = function(store_name, key_path, primary_key, value,
    */
   this.positions = opt_positions || [];
 };
-goog.inherits(ydn.db.text.IndexEntry, ydn.db.text.Entry);
+goog.inherits(ydn.db.text.IndexEntry, ydn.db.text.Token);
 
 
 /**
@@ -142,7 +142,7 @@ ydn.db.text.IndexEntry.prototype.toJson = function() {
  */
 ydn.db.text.IndexEntry.prototype.getId = function() {
   var id = [this.store_name, this.primary_key, this.value.toLowerCase()];
-  return ydn.db.text.Entry.isArrayKeyPathSupported ?
+  return ydn.db.text.Token.isArrayKeyPathSupported ?
       id : ydn.db.utils.encodeKey(id);
 };
 

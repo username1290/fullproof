@@ -19,22 +19,22 @@
  */
 
 
-goog.provide('ydn.db.text.QueryEntry');
-goog.require('ydn.db.text.Entry');
+goog.provide('ydn.db.text.QueryToken');
+goog.require('ydn.db.text.Token');
 
 
 
 /**
  * Entry for querying.
- * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
+ * @param {string} keyword normalized value of original word.
  * @param {number} position source key path.
  * @constructor
- * @extends {ydn.db.text.Entry}
+ * @extends {ydn.db.text.Token}
  * @struct
  */
-ydn.db.text.QueryEntry = function(keyword, value, position) {
-  goog.base(this, keyword, value);
+ydn.db.text.QueryToken = function(value, keyword, position) {
+  goog.base(this, value, keyword);
   /**
    * Location of the keyword in the document or query string.
    * @final
@@ -47,13 +47,13 @@ ydn.db.text.QueryEntry = function(keyword, value, position) {
   this.resultset = null;
   this.score = 1;
 };
-goog.inherits(ydn.db.text.QueryEntry, ydn.db.text.Entry);
+goog.inherits(ydn.db.text.QueryToken, ydn.db.text.Token);
 
 
 /**
  * @return {number} element score.
  */
-ydn.db.text.QueryEntry.prototype.getScore = function() {
+ydn.db.text.QueryToken.prototype.getScore = function() {
   return this.score;
 };
 
@@ -61,7 +61,7 @@ ydn.db.text.QueryEntry.prototype.getScore = function() {
 /**
  * @return {number} element score.
  */
-ydn.db.text.QueryEntry.prototype.getWeight = function() {
+ydn.db.text.QueryToken.prototype.getWeight = function() {
   return 1;
 };
 
@@ -69,6 +69,6 @@ ydn.db.text.QueryEntry.prototype.getWeight = function() {
 /**
  * @override
  */
-ydn.db.text.QueryEntry.prototype.getId = function() {
+ydn.db.text.QueryToken.prototype.getId = function() {
   return this.value + '|' + this.position;
 };

@@ -30,7 +30,7 @@
                     weight: 0.5
                 }]
         });
-        var query = new ydn.db.text.QueryEntry('TGR', 'tiger', 0, 'article', 'title');
+        var query = new ydn.db.text.QueryToken('tiger', 'TGR', 0, 'article', 'title');
 
         var test_add_result = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
@@ -42,7 +42,7 @@
                   keyPath: 'title',
                   score: 1,
                   positions: [2],
-                  id: ['article', 'key' + i, 'first']
+                  id: ['article', 'key' + i, 'first' + i]
               }
             }
             rs.addResult(query, results);
@@ -112,7 +112,7 @@
                 id: ['article', 'key1', 'tiger']
             }]);
             var results = rs.collect();
-            assertEquals('basic score', 1, results[0].getScore());
+            assertEquals('basic score', 1, results[0].score);
 
             rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
             rs.addResult(query, [{
@@ -123,7 +123,7 @@
                 id: ['article', 'key2', 'tiger']
             }]);
             results = rs.collect();
-            assertEquals('weighted score', 0.5, results[0].getScore());
+            assertEquals('weighted score', 0.5, results[0].score);
         };
         var test_scoring_composite = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
@@ -142,7 +142,7 @@
             }]);
             var results = rs.collect();
             assertEquals('number of result', 1, results.length);
-            assertEquals('compound score', 1.5, results[0].getScore());
+            assertEquals('compound score', 1.5, results[0].score);
         };
         var test_ranking = function() {
             var rs = new ydn.db.text.ResultSet(ft_schema, [query], 10, 1);
@@ -161,8 +161,8 @@
             }]);
             var results = rs.collect();
             assertEquals('number of result', 2, results.length);
-            assertEquals('compound score', 1, results[0].getScore());
-            assertEquals('compound score', 0.5, results[1].getScore());
+            assertEquals('compound score', 1, results[0].score);
+            assertEquals('compound score', 0.5, results[1].score);
         };
     </script>
 </body>

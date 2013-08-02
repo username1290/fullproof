@@ -20,7 +20,7 @@
 
 goog.provide('ydn.db.text.ResultSet');
 goog.require('ydn.db.KeyRange');
-goog.require('ydn.db.text.QueryEntry');
+goog.require('ydn.db.text.QueryToken');
 goog.require('ydn.db.text.RankEntry');
 goog.require('ydn.db.text.ResultEntry');
 
@@ -31,7 +31,7 @@ goog.require('ydn.db.text.ResultEntry');
  *
  * @constructor
  * @param {ydn.db.schema.fulltext.Catalog} ft_schema full text schema.
- * @param {Array.<ydn.db.text.QueryEntry>} query_tokens query tokens.
+ * @param {Array.<ydn.db.text.QueryToken>} query_tokens query tokens.
  * @param {number} limit Maximum number of satisfactory results.
  * @param {number} threshold Threshold score of a result to consider as
  * satisfactory.
@@ -46,7 +46,7 @@ ydn.db.text.ResultSet = function(ft_schema, query_tokens, limit, threshold) {
   this.catalog = ft_schema;
   /**
    * @protected
-   * @type {Array.<ydn.db.text.QueryEntry>}
+   * @type {Array.<ydn.db.text.QueryToken>}
    */
   this.query_tokens = query_tokens || [];
   /**
@@ -123,7 +123,7 @@ ydn.db.text.ResultSet.prototype.getStoreList = function() {
 ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
   for (var i = 0; i < results.length; i++) {
     var entry = ydn.db.text.ResultEntry.fromJson(
-        /** @type {ydn.db.text.QueryEntry} */ (query), results[i]);
+        /** @type {ydn.db.text.QueryToken} */ (query), results[i]);
     this.results.push(entry);
   }
   if (this.lap_ >= 3) {
@@ -142,7 +142,7 @@ ydn.db.text.ResultSet.prototype.collect = function() {
   var arr = [];
   for (var i = 0; i < this.results.length; i++) {
     var entry = new ydn.db.text.RankEntry(this.catalog, this.results[i]);
-    var index = goog.array.binarySearch(arr, entry, ydn.db.text.Entry.cmp);
+    var index = goog.array.binarySearch(arr, entry, ydn.db.text.Token.cmp);
     if (index < 0) {
       goog.array.insertAt(arr, entry, -(index + 1));
     } else {

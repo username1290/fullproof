@@ -1,4 +1,4 @@
-<project name="ydn-db-text" basedir="." default="compile-crud-text">
+<project name="ydn-db-text" basedir="." default="compile-dev">
     <dirname property="ydn-db-text.dir" file="${ant.file.ydn-db-text}"/>
     <property name="work.dir" location="${ydn-db-text.dir}/.." />
     <property name="ydn-base.dir" location="${work.dir}/ydn-base" />
@@ -105,96 +105,9 @@
               tofile="${out.dir}/ydn.db-dev-text.js.map"/>
     </target>
 
-    <target name="compile-crud-text"
-            description="generates compiled files for crud-text distribution">
-        <mkdir dir="${ydn-db.dir}/jsc"/>
-        <adv-comp
-                input.dir="${ydn-db-text.dir}/src"
-                input.fn="${ydn-db-text.dir}/src/config/text.js"
-                output.dir="${ydn-db.dir}/jsc"
-                output.fn="${buildno}-ydn.db-crud-text.js"
-                closure.entry="ydn.db.crud.Storage">
-            <exjs.dir>
-
-                <arg line='-i "${work.dir}/ydn-base/js/config/main.js"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/crud.js"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/conn.js"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/tr.js"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/base"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/conn"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/crud"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/tr"'/>
-                <arg line='-p "${work.dir}/natural/js"'/>
-                <arg line='-f "--define=ydn.db.base.USE_HOOK=true"'/>
-                <arg line='-f "--externs=${ydn-db-text.dir}/externs/unicode.js"'/>
-                <arg line='-f "--define=ydn.db.version=${quoted-version}"'/>
-            </exjs.dir>
-        </adv-comp>
-        <concat destfile="${dev-out.fn}" append="true">
-            //# sourceMappingURL=${buildno}-ydn.db-crud-text.js.map
-        </concat>
-
-        <replace description="replace so with online repo path"
-                 file="${dev-out.fn}.map"
-                 token="${work.dir}/ydn-base/"
-                 value="https://bitbucket.org/ytkyaw/ydn-base/raw/master/"/>
-        <replace description="replace so with online repo path"
-                 file="${dev-out.fn}.map"
-                 token="${work.dir}/ydn-db/"
-                 value="https://bitbucket.org/ytkyaw/ydn-db/raw/${version}/"/>
-        <replace description="replace so with online repo path"
-                 file="${dev-out.fn}.map"
-                 token="${work.dir}/closure-library/"
-                 value="https://raw.github.com/yathit/google-closure-library/master/"/>
-
-        <concat
-                destfile="${ydn-db.dir}/jsc/${buildno}-ydn.db-jquery.js">
-            <header>
-                (function() {
-            </header>
-            <filelist dir="${ydn-db.dir}/jsc"
-                      files="${buildno}-ydn.db-dev.js"/>
-        </concat>
-        <concat destfile="${ydn-db.dir}/jsc/${buildno}-ydn.db-jquery.js"
-                append="true">
-
-            })();
-        </concat>
-        <copy file="${ydn-db.dir}/jsc/${buildno}-ydn.db-jquery.js"
-              tofile="${ydn-db.dir}/jsc/ydn.db-jquery-${version}.js"/>
-    </target>
     <target name="gen-all-test-js" description="generate all test js">
         <gen-js-test base.dir="${ydn-db-text.dir}/src" ext="db"></gen-js-test>
     </target>
-    <target name="compile-core-text" description="generates compiled files for client js">
-        <mkdir dir="${ydn-db.dir}/jsc"/>
-        <adv-comp
-                input.dir="${ydn-db-text.dir}/js"
-                input.fn="${ydn-db.dir}/js/config/core_main.js"
-                output.dir="${ydn-db.dir}/jsc"
-                output.fn="${buildno}-ydn.db-core-text.js"
-                closure.entry="ydn.db.core.Storage">
-            <ex.opt>
-                <arg line='-i "${ydn-db-text.dir}/js/config/sync.js"'/>
-                <arg line='-i "${work.dir}/ydn-base/js/config/main.js"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/base"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/conn"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/core"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/crud"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/algo"'/>
-                <arg line='-p "${ydn-db.dir}/js/ydn/db/tr"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/conn.js"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/tr.js"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/crud.js"'/>
-                <arg line='-i "${ydn-db.dir}/js/config/core.js"'/>
-                <arg line='-p "${work.dir}/ydn/js"'/>
-                <arg line='-f "--externs=${work.dir}/ydn-base/externs/s3.js"'/>
-                <arg line='-f "--define=ydn.db.base.USE_HOOK=true"'/>
-                <arg line='-f "--define=ydn.db.version=${quoted-version}"'/>
-            </ex.opt>
-        </adv-comp>
-    </target>
-
 
     <target name="deps" description="list dependency files">
         <delete file="${ydn-db-text.dir}/src/deps.js"/>
@@ -206,8 +119,7 @@
 
 
     <target name="build" description="build all distribution"
-            depends="compile,compile-dev,compile-crud-text,
-            compile-core-text">
+            depends="compile,compile-dev">
 
     </target>
 </project>

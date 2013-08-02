@@ -19,7 +19,8 @@
  */
 
 
-goog.provide('ydn.db.text.Entry');
+goog.provide('ydn.db.text.Token');
+goog.require('goog.asserts');
 goog.require('goog.userAgent.product');
 goog.require('ydn.db');
 goog.require('ydn.db.schema.fulltext.Entry');
@@ -29,14 +30,15 @@ goog.require('ydn.db.utils');
 
 /**
  * An object that associates a value and a numerical score
- * @param {string} keyword normalized value of original word.
  * @param {string} value original word.
+ * @param {string} keyword normalized value of original word.
  * @param {number=} opt_score score.
  * @constructor
  * @struct
  * @implements {ydn.db.schema.fulltext.Entry}
  */
-ydn.db.text.Entry = function(keyword, value, opt_score) {
+ydn.db.text.Token = function(value, keyword, opt_score) {
+  // goog.asserts.assert(value.length >= keyword.length, 'wrong arg?');
   /**
    * @final
    * @type {string}
@@ -60,7 +62,7 @@ ydn.db.text.Entry = function(keyword, value, opt_score) {
 /**
  * @return {string} source store name.
  */
-ydn.db.text.Entry.prototype.getKeyword = function() {
+ydn.db.text.Token.prototype.getKeyword = function() {
   return this.keyword;
 };
 
@@ -68,7 +70,7 @@ ydn.db.text.Entry.prototype.getKeyword = function() {
 /**
  * @return {string} source store name.
  */
-ydn.db.text.Entry.prototype.getValue = function() {
+ydn.db.text.Token.prototype.getValue = function() {
   return this.value;
 };
 
@@ -76,7 +78,7 @@ ydn.db.text.Entry.prototype.getValue = function() {
 /**
  * @return {number} source store name.
  */
-ydn.db.text.Entry.prototype.getScore = function() {
+ydn.db.text.Token.prototype.getScore = function() {
   return this.score;
 };
 
@@ -84,12 +86,12 @@ ydn.db.text.Entry.prototype.getScore = function() {
 /**
  * Compare by score, then by id.
  * Note: this result 0 only if the same entry is compared.
- * @param {ydn.db.text.Entry} a entry a.
- * @param {ydn.db.text.Entry} b entry b.
+ * @param {ydn.db.text.Token} a entry a.
+ * @param {ydn.db.text.Token} b entry b.
  * @return {number} return 1 if score of entry a is smaller than that of b, -1
  * if score of entry b is smaller than a, otherwise compare by id.
  */
-ydn.db.text.Entry.cmp = function(a, b) {
+ydn.db.text.Token.cmp = function(a, b) {
   if (ydn.db.cmp(a.getId(), b.getId()) == 0) {
     return 0;
   } else {
@@ -104,15 +106,15 @@ ydn.db.text.Entry.cmp = function(a, b) {
  * @final
  * @type {boolean}
  */
-ydn.db.text.Entry.isArrayKeyPathSupported = goog.userAgent.product.CHROME ||
-    goog.userAgent.product.FIREFOX;
+ydn.db.text.Token.isArrayKeyPathSupported = !goog.userAgent.MOBILE &&
+    (goog.userAgent.product.CHROME || goog.userAgent.product.FIREFOX);
 
 
 /**
  * Uniquely identify this entry.
  * @return {IDBKey} Entry identifier.
  */
-ydn.db.text.Entry.prototype.getId = function() {
+ydn.db.text.Token.prototype.getId = function() {
   return this.value;
 };
 
@@ -121,7 +123,7 @@ if (goog.DEBUG) {
   /**
    * @inheritDoc
    */
-  ydn.db.text.Entry.prototype.toString = function() {
+  ydn.db.text.Token.prototype.toString = function() {
     return 'Entry:' + this.value;
   };
 }

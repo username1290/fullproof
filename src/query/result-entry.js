@@ -27,7 +27,7 @@ goog.require('ydn.db.text.IndexEntry');
 
 /**
  * Entry restored from the database.
- * @param {ydn.db.text.QueryEntry} query
+ * @param {ydn.db.text.QueryToken} query
  * @param {string} store_name inverted index schema.
  * @param {string} key_path inverted index schema.
  * @param {IDBKey} primary_key inverted index schema.
@@ -44,7 +44,7 @@ ydn.db.text.ResultEntry = function(query, store_name, key_path, primary_key,
   goog.base(this, store_name, key_path, primary_key, value,
       keyword, opt_positions, opt_score);
   /**
-   * @type {ydn.db.text.QueryEntry}
+   * @type {ydn.db.text.QueryToken}
    */
   this.query = query;
 };
@@ -62,7 +62,7 @@ ydn.db.text.ResultEntry.prototype.getScore = function() {
 
 
 /**
- * @param {ydn.db.text.QueryEntry} query
+ * @param {ydn.db.text.QueryToken} query
  * @param {Object} json
  * @return {ydn.db.text.ResultEntry}
  */
