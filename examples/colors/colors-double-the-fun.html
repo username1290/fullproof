@@ -42,7 +42,7 @@
 </div>
 <div class="grid splaining">
     <div style="margin-top: 1em;">
-     This page instanciates two search engines: one with fullproof.BooleanEngine, another with fullproof.ScoringEngine.
+     This page instanciates two search engines: one with fullproof.BooleanEngine, another with ydn.db.text.QueryEngine.
      You can compare how both work and see which one fits your application best.
     </div>
     <div>Please try it by typing any terms that may be part of a color name.</div>
@@ -138,7 +138,7 @@ $(document).ready(function() {
 //    var onlyMem = [new fullproof.StoreDescriptor("memorystore", fullproof.store.IndexedDBStore)];
     // onlyMem
     var colorSearchEngine = new fullproof.BooleanEngine();
-    var colorSearchEngine2 = new fullproof.ScoringEngine();
+    var colorSearchEngine2 = new ydn.db.text.QueryEngine();
 
     // Loads the color data from the csv, then creates the index descriptors and uses them to open the indexes
     loadData(function() {

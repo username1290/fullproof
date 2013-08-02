@@ -46,7 +46,7 @@ function initializerFunc(injector, callback) {
 } 
 
 function init_engine(indexes, callback) {
-    var engine = new fullproof.ScoringEngine([new fullproof.StoreDescriptor("memorystore", fullproof.store.MemoryStore)]);
+    var engine = new ydn.db.text.QueryEngine([new fullproof.StoreDescriptor("memorystore", fullproof.store.MemoryStore)]);
     engine.open(indexes, function() {
        callback(engine);
     });
@@ -62,7 +62,7 @@ test("create scoring engine clear empty", function() {
 });
 
 test("check initializer", function() {
-    var engine = new fullproof.ScoringEngine();
+    var engine = new ydn.db.text.QueryEngine();
     expect(1);
     QUnit.stop();
 
@@ -81,7 +81,7 @@ test("check initializer", function() {
 
 
 test("clear index", function() {
-	var engine = new fullproof.ScoringEngine();
+	var engine = new ydn.db.text.QueryEngine();
 	expect(1);
 	QUnit.stop();
 

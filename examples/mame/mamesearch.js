@@ -1,6 +1,6 @@
 var MameSearch = (function(){
 	
-	var engine = new fullproof.ScoringEngine();
+	var engine = new ydn.db.text.QueryEngine();
 	var data = [];
 	var dbName = "mamelist";
 	

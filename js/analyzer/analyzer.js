@@ -196,7 +196,7 @@ fullproof.Analyzer.prototype.score = function(text, source, key) {
       });
       if (!score) {
         score = new ydn.db.text.IndexEntry(store_name, key_path, key,
-          tokens[i], word);
+            tokens[i], word);
         scores.push(score);
       }
       score.encounter(++wordcount);

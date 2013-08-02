@@ -15,7 +15,7 @@
  */
 
 
-goog.provide('fullproof.ScoringEngine');
+goog.provide('ydn.db.text.QueryEngine');
 goog.require('fullproof.Analyzer');
 goog.require('ydn.db.schema.fulltext.Engine');
 
@@ -26,7 +26,7 @@ goog.require('ydn.db.schema.fulltext.Engine');
  * @constructor
  * @implements {ydn.db.schema.fulltext.Engine}
  */
-fullproof.ScoringEngine = function(schema) {
+ydn.db.text.QueryEngine = function(schema) {
   /**
    * @final
    * @protected
@@ -50,7 +50,7 @@ fullproof.ScoringEngine = function(schema) {
  * @param {number=} opt_threshold
  * @return {ydn.db.text.ResultSet}
  */
-fullproof.ScoringEngine.prototype.query = function(catalog_name, query,
+ydn.db.text.QueryEngine.prototype.query = function(catalog_name, query,
                                                    opt_limit, opt_threshold) {
   var tokens = this.analyzer.scoreQuery(query);
   if (tokens.length == 0) {
@@ -69,7 +69,7 @@ fullproof.ScoringEngine.prototype.query = function(catalog_name, query,
  * @param {!Object} obj the document to be indexed.
  * @return {Array.<ydn.db.text.QueryToken>} score for each token.
  */
-fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
+ydn.db.text.QueryEngine.prototype.analyze = function(store_name, key, obj) {
   var scores = [];
   for (var i = 0; i < this.schema.count(); i++) {
     var source = this.schema.index(i);
@@ -89,7 +89,7 @@ fullproof.ScoringEngine.prototype.analyze = function(store_name, key, obj) {
  * @param {string} query query string.
  * @return {Array.<string>} list of tokens.
  */
-fullproof.ScoringEngine.prototype.parse = function(query) {
+ydn.db.text.QueryEngine.prototype.parse = function(query) {
   return this.analyzer.parse(query);
 };
 
@@ -99,7 +99,7 @@ fullproof.ScoringEngine.prototype.parse = function(query) {
  * @param {Array.<string>} tokens tokens.
  * @return {Array.<string>} normalized tokens.
  */
-fullproof.ScoringEngine.prototype.normalize = function(tokens) {
+ydn.db.text.QueryEngine.prototype.normalize = function(tokens) {
   var nTokens = [];
   for (var i = 0; i < tokens.length; i++) {
     nTokens[i] = this.analyzer.normalize(tokens[i]);

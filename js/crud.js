@@ -21,7 +21,7 @@
 
 // namespace for full-text search index
 goog.provide('ydn.db.crud.Storage.text');
-goog.require('fullproof.ScoringEngine');
+goog.require('ydn.db.text.QueryEngine');
 goog.require('ydn.db.crud.Storage');
 
 
@@ -39,7 +39,7 @@ ydn.db.crud.Storage.text.DEBUG = false;
 ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
   var me = this;
 
-  ft_schema.engine = new fullproof.ScoringEngine(ft_schema);
+  ft_schema.engine = new ydn.db.text.QueryEngine(ft_schema);
   /**
    * @param {!ydn.db.Request} rq
    * @param {Arguments} args

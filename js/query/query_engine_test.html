@@ -15,7 +15,7 @@
         goog.require('ydn.debug');
         goog.require('ydn.db.Storage');
         goog.require('ydn.db.crud.Storage.text');
-        goog.require('fullproof.ScoringEngine');
+        goog.require('ydn.db.text.QueryEngine');
     </script>
     <script type="text/javascript">
         ydn.db.base.USE_HOOK = true;
@@ -41,7 +41,7 @@
             }]
     });
     var test_analyze = function() {
-        var engine = new fullproof.ScoringEngine(catalog);
+        var engine = new ydn.db.text.QueryEngine(catalog);
         var record = {
             name: 'Prairie Dog',
             binomial: 'Cynomys ludovicianus'
