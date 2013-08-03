@@ -162,23 +162,6 @@ SiteApp.prototype.handleSearch = function(e) {
 
 /**
  * @param {string} url
- * @param {Function} cb
- * @param {Object=} opt_scope
- */
-SiteApp.get = function(url, cb, opt_scope) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', url);
-  var me = this;
-  xhr.onload = function(e) {
-    var json = JSON.parse(xhr.responseText);
-    cb.call(opt_scope, json);
-  };
-  xhr.send();
-};
-
-
-/**
- * @param {string} url
  * @param {string} site_name
  * @param {Function} cb callback with next url and number of entries.
  */
@@ -282,28 +265,5 @@ SiteApp.prototype.run = function() {
   this.update(this.domain, this.site_name);
 };
 
-SiteApp.prototype.ele_entry_ = document.getElementById('entry-count');
-SiteApp.prototype.ele_index_ = document.getElementById('index-count');
-SiteApp.prototype.ele_status_ = document.getElementById('status');
-
 SiteApp.prototype.ele_results_ = document.getElementById('results');
 
-
-SiteApp.prototype.setStatus = function(msg) {
-  this.ele_status_.textContent = msg;
-};
-
-
-SiteApp.prototype.updateEntryCount = function(cnt, append) {
-  if (append) {
-    cnt += parseInt(this.ele_entry_.textContent, 10) || 0;
-  }
-  this.ele_entry_.textContent = cnt;
-};
-
-SiteApp.prototype.updateIndexCount = function(cnt, append) {
-  if (append) {
-    cnt += parseInt(this.ele_index_.textContent, 10) || 0;
-  }
-  this.ele_index_.textContent = cnt;
-};
