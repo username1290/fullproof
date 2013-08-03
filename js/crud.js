@@ -30,6 +30,7 @@ goog.require('ydn.db.crud.Storage');
  */
 ydn.db.crud.Storage.text.DEBUG = false;
 
+
 /**
  * Add full text indexer
  * @param {ydn.db.schema.Store} store store object.
@@ -105,8 +106,8 @@ ydn.db.crud.Storage.prototype.search = function(name, query, opt_limit,
 
   var ft_schema = this.schema.getFullTextSchema(name);
   if (!ft_schema) {
-    new ydn.debug.error.ArgumentException('full text index catalog "' + name +
-        '" not found.');
+    throw new ydn.debug.error.ArgumentException('full text index catalog "' +
+        name + '" not found.');
   }
   var result = ft_schema.engine.query(name, query, opt_limit, opt_threshold);
   if (!result) {
