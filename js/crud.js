@@ -43,7 +43,7 @@ ydn.db.crud.Storage.prototype.addFullTextIndexer = function(store, ft_schema) {
   ft_schema.engine = new ydn.db.text.QueryEngine(ft_schema);
   /**
    * @param {!ydn.db.Request} rq
-   * @param {Arguments} args
+   * @param {goog.array.ArrayLike} args
    */
   var indexer = function(rq, args) {
     var mth = rq.getMethod();

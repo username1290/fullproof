@@ -6,43 +6,53 @@ var PubMedApp = function() {
   App.call(this);
   var db_schema = {
     fullTextCatalogs: [{
-      name: 'name',
+      name: 'pubmed-index',
       lang: 'en',
       indexes: [
         {
-          storeName: 'animal',
-          keyPath: 'binomial',
+          storeName: 'pubmed',
+          keyPath: 'title',
           weight: 1.0
         }, {
-          storeName: 'animal',
-          keyPath: 'name',
+          storeName: 'pubmed',
+          keyPath: 'abstract',
           weight: 0.5
         }]
     }],
     stores: [
       {
         name: 'pubmed',
-        keyPath: 'binomial',
-        autoIncrement: true
+        keyPath: 'id'
       }]
   };
-  //this.db = new ydn.db.Storage('pubmed', db_schema);
+  this.db = new ydn.db.Storage('pubmed', db_schema);
   var btn_search = document.getElementById('search');
   btn_search.onclick = this.handleSearch.bind(this);
   var input = document.getElementById('search_input');
   input.onkeyup = this.handleInputChanged.bind(this);
+
+  this.stringency = 0.6;
+  // this.sel_stc = document.getElementById("sel_stc");
+  // this.sel_stc.onchange = this.handleStringencyChanged(this);
 };
 App.inherits(PubMedApp, App);
 
 
+PubMedApp.prototype.handleStringencyChanged = function(e) {
+  //this.stringency = parseInt(this.sel_stc.value, 10) || 0.4;
+  //this.setStatus('set stringency to ' + this.stringency);
+};
 
-PubMedApp.prototype.handleInputChanged = function(e) {
+
+PubMedApp.prototype.handleInputChanged = function(event) {
   var key = event.keyCode || event.which;
   if (key == 13) {
-    this.handleSearch(e);
+    this.handleSearch(event);
   }
 };
 
+
+PubMedApp.prototype.ele_results_ = document.getElementById('results');
 
 /**
  * @param {Array.<ydn.db.text.RankEntry>} arr
@@ -65,6 +75,7 @@ PubMedApp.prototype.renderResult = function(arr) {
     var li = document.createElement('li');
     var span = document.createElement('span');
     var a = document.createElement('a');
+    a.target = '_blank';
     var swt = document.createElement('a');
     var div = document.createElement('div');
     div.style.display = 'none';
@@ -83,9 +94,9 @@ PubMedApp.prototype.renderResult = function(arr) {
       var swt = this.children[1];
       var a = this.children[2];
       var div = this.children[3];
-      a.textContent = x.title.$t;
-      a.href = x.alternate;
-      div.innerHTML = x.content.$t;
+      a.textContent = x.title;
+      a.href = 'http://www.ncbi.nlm.nih.gov/pubmed/' + x.id;
+      div.innerHTML = x.abstract;
       // console.log(x);
     }, li);
     ul.appendChild(li);
@@ -94,37 +105,76 @@ PubMedApp.prototype.renderResult = function(arr) {
 };
 
 
-/**
- * @param {Event} e
- */
-PubMedApp.prototype.handleSearch = function(e) {
-  var ele = document.getElementById('search_input');
-  var rq = this.db.search('pubmed-index', ele.value);
-  rq.progress(function(pe) {
-    // console.log(pe.length + ' results found');
+PubMedApp.prototype.showStatistic = function(cb, scope) {
+  this.db.count('pubmed').done(function(cnt) {
+    this.updateEntryCount(cnt);
   }, this);
-  rq.done(function(pe) {
-    // console.log(pe);
-    this.renderResult(pe);
+  this.db.count('pubmed-index').done(function(cnt) {
+    this.updateIndexCount(cnt);
+    if (cb) {
+      cb.call(scope, cnt);
+    }
   }, this);
 };
 
 
-PubMedApp.prototype.fetch = function(ids, cb, scope) {
-  // extracting by XML is slow.
-  var url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=abstract&rettype=text&id=' + ids.join(',');
+/**
+ * @param {Event} e
+ */
+PubMedApp.prototype.handleSearch = function(e) {
+  var start = Date.now();
+  var ele = document.getElementById('search_input');
+  var term = ele.value;
+  var rq = this.db.search('pubmed-index', term);
+  rq.progress(function(pe) {
+    // console.log(pe.length + ' results found');
+  }, this);
+  rq.done(function(pe) {
+    this.renderResult(pe);
+    var etime = (Date.now() - start);
+    this.setStatus(pe.length + ' results found in the database. Search took ' + etime + ' ms.');
+    if (e && (pe.length == 0 || pe[0].score < this.stringency)) {
+      this.setStatus(' Searching on PubMed...', true);
+      this.pubmedSearch(term, function(results) {
+        this.setStatus(results.length + ' results found in PubMed. indexing');
+        if (results.length > 0) {
+          this.db.put('pubmed', results).done(function(x) {
+            this.setStatus('Indexing done.');
+            this.showStatistic(function() {
+              this.handleSearch(null);
+            }, this);
+          }, this);
+        } else {
+          this.setStatus('No result for "' + term + '"');
+        }
+      }, this);
+    }
+  }, this);
+};
+
+
+PubMedApp.prototype.pubmedFetch = function(ids, cb, scope) {
+  if (ids.length == 0) {
+    cb.call(scope, []);
+  }
+  var url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&rettype=xml&id=' + ids.join(',');
   App.get(url, function(json) {
     // console.log(json);
-    // window.ans = json;
-    var re = /([\s\S]+?)PMID: (\d+)(.+\n)/g;
-    var ids = [];
-    var abstracts = [];
-    var m;
-    while (m = re.exec(json)) {
-      ids.push(m[2]);
-      abstracts.push(m[1].trim());
+     window.ans = json;
+    var articles = [];
+    if (json.PubmedArticleSet) {
+      var arts = json.PubmedArticleSet[1].PubmedArticle;
+      for (var i = 0; i < arts.length; i++) {
+        var cit = arts[i];
+        var art = cit.MedlineCitation.Article;
+        articles[i] = {
+          id: cit.MedlineCitation.PMID.$t,
+          title: art.ArticleTitle.$t,
+          abstract: art.Abstract ? art.Abstract.AbstractText.$t : ''
+        };
+      }
     }
-    cb.call(scope, ids, abstracts);
+    cb.call(scope, articles);
   }, this);
 };
 
@@ -132,11 +182,15 @@ PubMedApp.prototype.fetch = function(ids, cb, scope) {
 PubMedApp.prototype.pubmedSearch = function(term, cb, scope) {
   var url = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=xml&term=' + term;
   App.get(url, function(json) {
-    console.log(json);
-    var ids =  json.eSearchResult[1].IdList.Id.map(function(x) {
-      return x.$t;
-    });
-    cb.call(scope, ids);
+    // console.log(json);
+    var id_list = json.eSearchResult[1].IdList.Id;
+    var ids = [];
+    if (id_list) {
+      ids =  id_list.map(function(x) {
+        return x.$t;
+      });
+    }
+    this.pubmedFetch(ids, cb, scope);
   }, this);
 };
 
@@ -146,14 +200,8 @@ PubMedApp.prototype.pubmedSearch = function(term, cb, scope) {
  * Run the app.
  */
 PubMedApp.prototype.run = function() {
-  this.pubmedSearch('actin', function(ids) {
-    this.fetch(ids, function(ids, texts) {
-      console.log(texts);
-      console.log(ids);
-      window.texts = texts;
-    }, this);
-  }, this);
-  // this.fetch("23908673");
+  this.showStatistic();
+  this.setStatus('Ready');
 };
 
 

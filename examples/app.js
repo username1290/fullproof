@@ -33,7 +33,10 @@ App.prototype.updateIndexCount = function(cnt, append) {
   this.ele_index_.textContent = cnt;
 };
 App.prototype.ele_status_ = document.getElementById('status');
-App.prototype.setStatus = function(msg) {
+App.prototype.setStatus = function(msg, append) {
+  if (append) {
+    msg = this.ele_status_.textContent + msg;
+  }
   this.ele_status_.textContent = msg;
 };
 
@@ -72,6 +75,7 @@ App.get = function(url, cb, opt_scope) {
       json = xhr.responseText;
     }
     cb.call(opt_scope, json);
+    cb = null;
   };
   xhr.send();
 };
