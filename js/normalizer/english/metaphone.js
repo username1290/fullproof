@@ -31,7 +31,7 @@ goog.provide('natural.phonetics.Metaphone');
 /**
  * @param {number} maxLength
  * @constructor
- * @implements {fullproof.normalizer.Normalizer}
+ * @implements {ydn.db.text.Normalizer}
  */
 natural.phonetics.Metaphone = function(maxLength) {
   this.maxLength = maxLength;

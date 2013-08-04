@@ -25,7 +25,7 @@ net.kornr.unicode.CONST_GO_RIGHT = -2;
  * should be written for this case)
  * @param {Array.<Array.<string|number>>} data
  * @constructor
- * @implements {fullproof.normalizer.Normalizer}
+ * @implements {ydn.db.text.Normalizer}
  */
 net.kornr.unicode.Normalizer = function(data) {
 

@@ -21,7 +21,7 @@ goog.provide('fullproof.normalizer.english.PorterStemmer');
 
 /**
  * @constructor
- * @implements {fullproof.normalizer.Normalizer}
+ * @implements {ydn.db.text.Normalizer}
  */
 fullproof.normalizer.english.PorterStemmer = function() {
 

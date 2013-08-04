@@ -7,7 +7,7 @@
  */
 
 goog.provide('fullproof.normalizer.english');
-goog.require('fullproof.normalizer.StopWordRemover');
+goog.require('ydn.db.text.StopWordRemover');
 goog.require('fullproof.normalizer.english.PorterStemmer');
 goog.require('fullproof.normalizer.english.stopwords');
 goog.require('natural.phonetics.Metaphone');
@@ -31,15 +31,15 @@ fullproof.normalizer.english.stemmer =
 
 /**
  * @final
- * @type {fullproof.normalizer.StopWordRemover}
+ * @type {ydn.db.text.StopWordRemover}
  */
-fullproof.normalizer.english.stop = new fullproof.normalizer.StopWordRemover(
+fullproof.normalizer.english.stop = new ydn.db.text.StopWordRemover(
     fullproof.normalizer.english.stopwords);
 
 
 /**
  * @param {Array.<string>=} opt_names name of normalizers.
- * @return {!Array.<!fullproof.normalizer.Normalizer>} list of English
+ * @return {!Array.<!ydn.db.text.Normalizer>} list of English
  * normalizers.
  */
 fullproof.normalizer.english.getNormalizers = function(opt_names) {
