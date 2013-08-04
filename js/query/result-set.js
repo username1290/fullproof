@@ -85,17 +85,27 @@ ydn.db.text.ResultSet.prototype.nextLookup = function(cb) {
   if (this.lap_ > 3) {
     throw new ydn.debug.error.InvalidOperationException('too many loopup laps');
   }
-  var index_name = this.lap_ == 1 ? 'keyword' : 'value';
+  var key, key_range, index_name;
   var store_name = this.catalog.getName();
   for (var j = 0; j < this.query_tokens.length; j++) {
     var token = this.query_tokens[j];
-    var key = index_name == 'keyword' ?
-        token.getKeyword() : token.getValue();
-    if (goog.isDefAndNotNull(key)) {
-      var key_range = this.lap_ == 2 ? ydn.db.KeyRange.starts(key) :
-          ydn.db.KeyRange.only(key);
-      cb(store_name, index_name, key_range, this.query_tokens[j]);
+    if (this.lap_ == 0) {
+      index_name = 'value';
+      key = token.getValue().toLowerCase();
+      key_range = ydn.db.KeyRange.only(key);
+    } else if (this.lap_ == 1) {
+      index_name = 'keyword';
+      key = token.getKeyword();
+      key_range = ydn.db.KeyRange.only(key);
+    } else if (this.lap_ == 2) {
+      index_name = 'value';
+      key = token.getValue().toLowerCase();
+      key_range = ydn.db.KeyRange.starts(key);
+    } else {
+      throw new ydn.debug.error.InvalidOperationException(
+          'too many loopup laps');
     }
+    cb(store_name, index_name, key_range, token);
   }
   this.lap_++;
 };
@@ -120,17 +130,20 @@ ydn.db.text.ResultSet.prototype.getStoreList = function() {
 /**
  * @inheritDoc
  */
-ydn.db.text.ResultSet.prototype.addResult = function(query, results) {
+ydn.db.text.ResultSet.prototype.addResult = function(q, results) {
+  var query = /** @type {ydn.db.text.QueryToken} */ (q);
   for (var i = 0; i < results.length; i++) {
     var entry = ydn.db.text.ResultEntry.fromJson(
         /** @type {ydn.db.text.QueryToken} */ (query), results[i]);
     this.results.push(entry);
   }
+  var next = true;
   if (this.lap_ >= 3) {
-    return false; // no more lookup
+    next = false;
   }
-  // return this.count(true) <= this.limit;
-  return true;
+  var last_token = this.query_tokens[this.query_tokens.length - 1];
+  var is_last_token = last_token.position === query.position;
+  return is_last_token ? next : null;
 };
 
 
