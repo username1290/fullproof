@@ -85,44 +85,11 @@ fullproof.Analyzer.prototype.normalize = function(word) {
 fullproof.Analyzer.prototype.parse = function(text) {
   var tokens = [];
   // Note: parse is always sync.
-  this.tokenize(text, function(start, len) {
+  net.kornr.unicode.tokenize(text, function(start, len) {
     var token = text.substr(start, len);
     tokens.push(token);
   });
   return tokens;
-};
-
-
-/**
- * A simple private parser that relies on the unicode letter/number
- * categories. Word boundaries are whatever is not a letter
- * or a number.
- * @param {string} text text to parse.
- * @param {function(number, number)} callback yield start and length for each
- * token. Length is always larger than 0.
- */
-fullproof.Analyzer.prototype.tokenize = function(text, callback) {
-  var functor = net.kornr.unicode.is_letter_number;
-  var start = 0;
-  var len = 0;
-  var max = text.length;
-  for (var i = 0; i < max; ++i) {
-    /**
-     * @type {number}
-     */
-    var c = text.charCodeAt(i);
-    if (!functor(c)) {
-      len = i - start;
-      if (len) {
-        callback(start, len);
-      }
-      start = i + 1;
-    }
-  }
-  len = max - start;
-  if (len) {
-    callback(start, len);
-  }
 };
 
 
@@ -135,7 +102,7 @@ fullproof.Analyzer.prototype.scoreQuery = function(text) {
   var tokens = [];
   var positions = [];
   // Note: parse is always sync.
-  this.tokenize(text, function(start, len) {
+  net.kornr.unicode.tokenize(text, function(start, len) {
     var token = text.substr(start, len);
     tokens.push(token);
     positions.push(start);
@@ -174,7 +141,7 @@ fullproof.Analyzer.prototype.score = function(text, source, key) {
   var tokens = [];
   var positions = [];
   // Note: parse is always sync.
-  this.tokenize(text, function(start, len) {
+  net.kornr.unicode.tokenize(text, function(start, len) {
     var token = text.substr(start, len);
     tokens.push(token);
     positions.push(start);
