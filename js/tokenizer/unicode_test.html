@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Unicode test</title>
+    <script src="../../../closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="../../js/deps.js"></script>
+    <script type="text/javascript" src="normalizer_lowercase.js"></script>
+    <script type="text/javascript" src="normalizer_lowercase_nomark.js"></script>
+    <script type="text/javascript">
+        goog.require('fullproof.normalizer');
+    </script>
+</head>
+<body>
+    <script type="text/javascript">
+        goog.require('goog.testing.jsunit');
+        var cremebrulee_composed = "crème brûlée";
+        var cremebrulee_decomposed = "\u0063\u0072\u0065\u0300\u006d\u0065\u0020\u0062\u0072\u0075\u0302\u006c\u0065\u0301\u0065";
+        var cremebrulee_nomark = "\u0063\u0072\u0065\u006d\u0065\u0020\u0062\u0072\u0075\u006c\u0065\u0065";
+        var test_to_lowercase_nomark = function() {
+            assertEquals("l'elephant de l'hopital danse meme le dimanche", fullproof.normalizer.to_lowercase_nomark("l'éléphant de l'hôpital danse même le dimanche"));
+            assertEquals(fullproof.normalizer.to_lowercase_nomark("a SIMPLE TEST WITHOUT diacritical marks"), "a simple test without diacritical marks");
+            assertEquals(fullproof.normalizer.to_lowercase_nomark(cremebrulee_composed), cremebrulee_nomark);
+
+            // does not work, not sure it should actually
+//	equal(cremebrulee_nomark, fullproof.normalizer.to_lowercase_nomark(cremebrulee_decomposed));
+
+            assertEquals(" should not trim string ", fullproof.normalizer.to_lowercase_nomark(" should not trim string "));
+            assertEquals(" should not trim string even with eeaeo signs", fullproof.normalizer.to_lowercase_nomark(" should not trim string even with ééâêô signs"));
+            assertEquals("", fullproof.normalizer.to_lowercase_nomark(""));
+
+            // Does not alter the values
+            assertEquals(false, fullproof.normalizer.to_lowercase_nomark(false));
+            assertEquals("", fullproof.normalizer.to_lowercase_nomark(""));
+        };
+
+        var test_to_lowercase_decomp = function() {
+
+            assertEquals(fullproof.normalizer.to_lowercase_decomp("a SIMPLE TEST WITHOUT diacritical marks"), "a simple test without diacritical marks");
+            assertEquals(fullproof.normalizer.to_lowercase_decomp(cremebrulee_composed), cremebrulee_decomposed);
+
+            assertEquals(fullproof.normalizer.to_lowercase_decomp(" should not trim string "), " should not trim string ");
+            assertEquals(fullproof.normalizer.to_lowercase_decomp(" SHOULD NOT trim string even with ééâêô signs"), " should not trim string even with \u0065\u0301\u0065\u0301\u0061\u0302\u0065\u0302\u006f\u0302 signs");
+            assertEquals(fullproof.normalizer.to_lowercase_decomp(""), "");
+
+            // Does not alter the values
+            assertEquals(fullproof.normalizer.to_lowercase_decomp(false), false);
+            assertEquals("", fullproof.normalizer.to_lowercase_decomp(""));
+        };
+
+        var test_remove_duplicate_letters = function() {
+            assertEquals(fullproof.normalizer.remove_duplicate_letters("ThISSS IZZZ A TEST"), "ThIS IZ A TEST");
+        };
+    </script>
+</body>
+</html>
