@@ -39,7 +39,7 @@ fullproof.normalizer.english.stop = new fullproof.normalizer.StopWordRemover(
 
 /**
  * @param {Array.<string>=} opt_names name of normalizers.
- * @return {!Array.<!fullproof.normalizer.Normalizer>} list of English
+ * @return {!Array.<!ydn.db.text.Normalizer>} list of English
  * normalizers.
  */
 fullproof.normalizer.english.getNormalizers = function(opt_names) {
