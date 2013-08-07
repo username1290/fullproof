@@ -36,7 +36,7 @@ var ScoreTestAnalyzer = function() {
         });
     };
 }
-ScoreTestAnalyzer.prototype = new ydn.db.text.Analyzer();
+ScoreTestAnalyzer.prototype = new ydn.db.text.QueryEngine();
 
 function initializerFunc(injector, callback) {
 	var synchro = fullproof.make_synchro_point(callback, 5);
